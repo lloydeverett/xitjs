@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>xitjs demo</title>
+    <link rel="stylesheet" href="./demo.css" />
+  </head>
+  <body>
+    <header>
+      <h1>xitjs <span>demo</span></h1>
+      <label>
+        Sample
+        <select id="sample"></select>
+      </label>
+      <span id="round-trip-badge" class="badge"></span>
+    </header>
+
+    <main>
+      <section class="column">
+        <div class="card">
+          <h2>Editor <small>xitjs/codemirror: xit(), xitHighlightStyle, and lint from validate()</small></h2>
+          <div id="editor"></div>
+        </div>
+
+        <div class="card">
+          <h2>Edit an item <small>updateItem, setTag, removeTag, setDueDate, then stringify</small></h2>
+          <label class="row">
+            Item
+            <select id="item"></select>
+          </label>
+          <div class="row">
+            <select id="status">
+              <option value="open">[ ] open</option>
+              <option value="checked">[x] checked</option>
+              <option value="ongoing">[@] ongoing</option>
+              <option value="obsolete">[~] obsolete</option>
+              <option value="in-question">[?] in question</option>
+            </select>
+            <label>Priority <input id="priority" type="number" min="0" max="10" value="0" /></label>
+            <button id="apply-status">Update</button>
+          </div>
+          <div class="row">
+            <input id="tag-name" placeholder="tag name" />
+            <input id="tag-value" placeholder="value (optional)" />
+            <button id="set-tag">Set tag</button>
+            <button id="remove-tag">Remove tag</button>
+          </div>
+          <div class="row">
+            <input id="due" placeholder="2026-11-04, 2026-W45, 2026-Q4…" />
+            <button id="set-due">Set due date</button>
+            <button id="clear-due">Clear</button>
+          </div>
+          <div class="row">
+            <input id="new-item" placeholder="A new item's text" />
+            <button id="add-item">Add item (createItem)</button>
+          </div>
+          <p id="edit-message" class="message"></p>
+        </div>
+      </section>
+
+      <section class="column">
+        <div class="card outputs">
+          <nav id="tabs">
+            <button data-tab="document">parse</button>
+            <button data-tab="groups">getGroups</button>
+            <button data-tab="diagnostics">validate</button>
+            <button data-tab="tokens">tokenize</button>
+            <button data-tab="round-trip">stringify</button>
+          </nav>
+          <div id="output"></div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./demo.ts"></script>
+  </body>
+</html>

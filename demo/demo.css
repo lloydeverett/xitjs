@@ -1,0 +1,151 @@
+:root {
+  --bg: #f6f6f3;
+  --card: #ffffff;
+  --text: #1d1d1b;
+  --muted: #6b6b66;
+  --border: #deded8;
+  --accent: #2f6fdf;
+  --ok: #1f8a4c;
+  --bad: #c43c3c;
+  --code-bg: #f3f3ef;
+  /* Highlighting colours for xitTags (see demo.ts). */
+  --xit-title: #1d1d1b;
+  --xit-checkbox: #2f6fdf;
+  --xit-priority: #d0452f;
+  --xit-tag: #7a4fd6;
+  --xit-due: #1f8a4c;
+  --xit-invalid: #c43c3c;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161615;
+    --card: #1f1f1d;
+    --text: #e8e8e3;
+    --muted: #9a9a93;
+    --border: #34342f;
+    --accent: #7aa5f5;
+    --ok: #5cc98a;
+    --bad: #f07a7a;
+    --code-bg: #262623;
+    --xit-title: #f2f2ec;
+    --xit-checkbox: #7aa5f5;
+    --xit-priority: #f58a6f;
+    --xit-tag: #b69bf5;
+    --xit-due: #5cc98a;
+    --xit-invalid: #f07a7a;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+h1 { margin: 0; font-size: 18px; }
+h1 span { color: var(--muted); font-weight: 400; }
+h2 { margin: 0 0 10px; font-size: 14px; }
+h2 small { color: var(--muted); font-weight: 400; margin-left: 6px; }
+
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px 20px 32px;
+}
+
+@media (max-width: 900px) {
+  main { grid-template-columns: minmax(0, 1fr); padding: 16px; }
+  header { padding: 12px 16px; }
+}
+
+.column { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  min-width: 0;
+}
+
+select, input, button {
+  font: inherit;
+  color: inherit;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+button { cursor: pointer; }
+button:hover { border-color: var(--accent); }
+input[type='number'] { width: 4.5em; }
+header select { max-width: min(60vw, 520px); }
+
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
+.row select#item { flex: 1; min-width: 0; }
+
+.message { min-height: 1.4em; margin: 4px 0 0; color: var(--muted); }
+.message.error { color: var(--bad); }
+.message.ok { color: var(--ok); }
+
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
+.badge.ok { color: var(--ok); border-color: currentColor; }
+.badge.bad { color: var(--bad); border-color: currentColor; }
+
+#editor .cm-editor {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 320px;
+  max-height: 70vh;
+  font-size: 13px;
+}
+#editor .cm-scroller { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+#editor .cm-gutters { background: var(--code-bg); border-right: 1px solid var(--border); color: var(--muted); }
+
+#tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+#tabs button[aria-selected='true'] { border-color: var(--accent); color: var(--accent); }
+
+#output { overflow: auto; max-height: calc(100vh - 160px); }
+
+pre {
+  margin: 0;
+  padding: 10px;
+  background: var(--code-bg);
+  border-radius: 6px;
+  font: 12px/1.45 ui-monospace, 'SF Mono', Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; }
+td code { font: 12px ui-monospace, 'SF Mono', Menlo, monospace; white-space: pre-wrap; word-break: break-word; }
+tr.clickable { cursor: pointer; }
+tr.clickable:hover { background: var(--code-bg); }
+.error { color: var(--bad); }
+.warning { color: #b7791f; }
+
+.group { margin-bottom: 12px; }
+.group h3 { margin: 0 0 4px; font-size: 13px; }
+.group ul { margin: 0; padding-left: 18px; }
+.muted { color: var(--muted); }
+.check { margin: 0 0 6px; }
+.check.ok::before { content: '✓ '; color: var(--ok); }
+.check.bad::before { content: '✗ '; color: var(--bad); }

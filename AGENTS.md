@@ -15,6 +15,9 @@ dependencies, `@codemirror/language` and `@lezer/highlight`.
 trusted; ask before adding one. `pnpm-workspace.yaml` refuses releases under
 a week old.
 
+`pnpm demo` serves `demo/` (a CodeMirror editor and the library's output)
+with Vite, from `src/`: use it to see a change working in a browser.
+
 ## Before calling a change done
 
 All must pass:

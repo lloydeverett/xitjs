@@ -262,7 +262,15 @@ mise exec -- pnpm test        # node:test, running the TypeScript directly
 mise exec -- pnpm test:fuzz   # the property tests, 50 times over
 mise exec -- pnpm test:dist   # build, then check the built package
 mise exec -- pnpm typecheck
+mise exec -- pnpm demo        # a demo page: http://localhost:5173
 ```
+
+`pnpm demo` serves `demo/` with Vite, using the library straight from
+`src/`. It has a CodeMirror editor using `xitjs/codemirror` (with lint
+from `validate`), samples including every syntax-guide example, controls
+that edit the selected item with `updateItem`, `setTag`, `removeTag`,
+`setDueDate` and `createItem`, and what `parse`, `getGroups`, `validate`,
+`tokenize` and `stringify` make of the text.
 
 `test/fixtures/syntax-guide.json` is generated from the syntax guide's HTML
 by `scripts/guide_fixture.py`. It records how the guide's own highlighting

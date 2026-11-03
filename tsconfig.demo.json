@@ -1,0 +1,12 @@
+{
+  // The demo page (`pnpm demo`): bundled by Vite for the browser, so it has the DOM.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client"]
+  },
+  "include": ["src", "demo", "vite.config.ts"]
+}
