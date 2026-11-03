@@ -1,4 +1,4 @@
-import { makeItem, STATUS_CHARS } from './item.ts';
+import { CHECKBOX_WIDTH, checkbox, makeItem } from './item.ts';
 import type { Block, Item, Status, XitDocument } from './types.ts';
 
 export interface ItemInit {
@@ -35,9 +35,9 @@ export function updateItem(item: Item, changes: ItemInit): Item {
   const priority = changes.priority ?? item.priority;
   const description = changes.description ?? item.description;
   let raw = item.raw;
-  // An item's source starts with its checkbox: `[`, the status's character, `]`.
+  // An item's source starts with its checkbox.
   if (raw !== undefined && status !== item.status && priority === item.priority && description === item.description) {
-    raw = `[${STATUS_CHARS[status]}]${raw.slice(3)}`;
+    raw = checkbox(status) + raw.slice(CHECKBOX_WIDTH);
   }
   return makeItem(status, priority, description, raw);
 }

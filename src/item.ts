@@ -17,6 +17,11 @@ export const STATUS_BY_CHAR: Readonly<Record<string, Status>> = Object.fromEntri
 /** `[ ]`, `[x]` and so on are three characters wide. */
 export const CHECKBOX_WIDTH = 3;
 
+/** A status's checkbox, as it's written: `[`, its character, `]` (`CHECKBOX_WIDTH` long). */
+export function checkbox(status: Status): string {
+  return `[${STATUS_CHARS[status]}]`;
+}
+
 /** The indentation of a description's continuation lines. */
 export const INDENT = '    ';
 

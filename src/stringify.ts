@@ -1,6 +1,6 @@
 import { charAt, isBlankChar, isBlankLine } from './chars.ts';
 import { XitStringifyError } from './errors.ts';
-import { INDENT, PRIORITY, STATUS_CHARS, descriptionProblem, sameContent } from './item.ts';
+import { INDENT, PRIORITY, STATUS_CHARS, checkbox, descriptionProblem, sameContent } from './item.ts';
 import { parse } from './parse.ts';
 import type { Block, Item, Newline, Title, XitDocument } from './types.ts';
 
@@ -93,8 +93,7 @@ function checkTitle(title: Title, previous: Block | undefined, fail: (message: s
 
 function itemLines(item: Item, fail: (message: string) => never): string[] {
   const { status, priority, description } = item;
-  const box = Object.hasOwn(STATUS_CHARS, status) ? STATUS_CHARS[status] : undefined;
-  if (box === undefined) fail(`Unknown status: ${JSON.stringify(status)}.`);
+  if (!Object.hasOwn(STATUS_CHARS, status)) fail(`Unknown status: ${JSON.stringify(status)}.`);
   if (!Number.isInteger(priority) || priority < 0) fail(`The priority must be a whole number, 0 or more, not ${priority}.`);
 
   const problem = descriptionProblem(description);
@@ -108,7 +107,7 @@ function itemLines(item: Item, fail: (message: string) => never): string[] {
   // one first keeps the description intact: '[ ] . !! a'.
   let marker = priority > 0 ? '!'.repeat(priority) : '';
   if (priority === 0 && PRIORITY.test(first)) marker = '.';
-  const head = `[${box}]` + (marker ? ` ${marker}` : '') + (first === '' ? '' : ` ${first}`);
+  const head = checkbox(status) + (marker ? ` ${marker}` : '') + (first === '' ? '' : ` ${first}`);
   return [head, ...rest.map((line) => INDENT + line)];
 }
 
