@@ -116,7 +116,11 @@ export interface Group {
   items: Item[];
   /** The index in `blocks` of the group's first block (its title, or its first item). */
   start: number;
-  /** The index in `blocks` just past its last block. */
+  /**
+   * The index in `blocks` just past its last block. (Any invalid lines
+   * straight after are not the group's, but `moveGroup` and `removeGroup`
+   * take them with it.)
+   */
   end: number;
 }
 

@@ -8,6 +8,7 @@
 
 import { itemFrom, type GroupInit, type ItemInit } from './build.ts';
 import { XitEditError, XitStringifyError } from './errors.ts';
+import { sameContent } from './item.ts';
 import { parse } from './parse.ts';
 import { stringify } from './stringify.ts';
 import type { BlankLine, Block, Group, Item, Title, XitDocument } from './types.ts';
@@ -59,7 +60,7 @@ export function addItem(document: XitDocument, group: number, item: string | Ite
  * title goes with its last item, along with a blank line next to it.
  */
 export function removeItem(document: XitDocument, item: Item): XitDocument {
-  const index = indexOfItem(document, item);
+  const index = requireItem(document, item);
   const groups = getGroups(document);
   const from = groups.findIndex((g) => g.items.includes(item));
   const source = groups[from]!;
@@ -75,18 +76,16 @@ export function removeItem(document: XitDocument, item: Item): XitDocument {
  * formatting. A group without a title goes when its last item leaves it.
  */
 export function moveItem(document: XitDocument, item: Item, group: number, position?: number): XitDocument {
-  indexOfItem(document, item);
+  requireItem(document, item);
   const target = groupAt(getGroups(document), group);
-  positionIn(target, position);
-  // Something that identifies the target group once the item is gone.
-  const anchor: Block | undefined = target.title !== null
-    ? document.blocks[target.start]
-    : target.items.find((i) => i !== item);
-  // The item is its group's only item, and stays in it.
-  if (!anchor) return document;
+  checkPosition(position);
+  // To find the target group again once the item is gone: its title, or another of its items.
+  const title = target.title !== null ? document.blocks[target.start] : undefined;
+  const other = target.items.find((i) => i !== item);
+  // Neither: the item is its group's only item, and stays in it.
+  if (!title && !other) return document;
   const removed = removeItem(document, item);
-  const after = getGroups(removed);
-  const index = after.findIndex((g) => removed.blocks[g.start] === anchor || g.items.includes(anchor as Item));
+  const index = getGroups(removed).findIndex((g) => (title ? removed.blocks[g.start] === title : g.items.includes(other!)));
   return addItem(removed, index, item, position);
 }
 
@@ -97,9 +96,7 @@ export function moveItem(document: XitDocument, item: Item, group: number, posit
 export function addGroup(document: XitDocument, init: GroupInit, index?: number): XitDocument {
   const groups = getGroups(document);
   const at = index ?? groups.length;
-  if (!Number.isInteger(at) || at < 0 || at > groups.length) {
-    throw new XitEditError(`There's no place for a group at ${at}: the document has ${groups.length} groups.`);
-  }
+  checkGroupIndex(groups, at, { orEnd: true });
   const blocks: Block[] = (init.items ?? []).map(itemFrom);
   if (init.title != null) blocks.unshift({ type: 'title', text: init.title } satisfies Title);
   if (blocks.length === 0) throw new XitEditError('A group needs a title or an item.');
@@ -113,7 +110,7 @@ export function addGroup(document: XitDocument, init: GroupInit, index?: number)
 export function removeGroup(document: XitDocument, group: number): XitDocument {
   const groups = getGroups(document);
   groupAt(groups, group);
-  return removeGroupAt(document, groups, group, 'remove the group', withTrailingInvalid);
+  return removeGroupAt(document, groups, group, 'remove the group', { withTrailingInvalid: true });
 }
 
 /**
@@ -125,8 +122,8 @@ export function moveGroup(document: XitDocument, from: number, to: number): XitD
   const moving = groupAt(groups, from);
   groupAt(groups, to);
   if (from === to) return document;
-  const blocks = document.blocks.slice(moving.start, withTrailingInvalid(document.blocks, moving));
-  const removed = removeGroupAt(document, groups, from, 'move the group', withTrailingInvalid);
+  const blocks = document.blocks.slice(moving.start, endWithTrailingInvalid(document.blocks, moving));
+  const removed = removeGroupAt(document, groups, from, 'move the group', { withTrailingInvalid: true });
   return insertGroup(removed, getGroups(removed), to, blocks, 'move the group');
 }
 
@@ -152,11 +149,8 @@ export function setGroupTitle(document: XitDocument, group: number, title: strin
 
 // Helpers ---------------------------------------------------------------------
 
-/** A group by value: its title and its items. */
-interface Shape {
-  title: string | null;
-  items: Item[];
-}
+/** A group without its place in the document: what an edit expects it to become. */
+type Shape = Omit<Group, 'start' | 'end'>;
 
 function shapes(groups: readonly Group[]): Shape[] {
   return groups.map((g) => ({ title: g.title, items: [...g.items] }));
@@ -168,7 +162,7 @@ function shapes(groups: readonly Group[]): Shape[] {
  * description). Otherwise throws a `XitEditError`: if no candidate could be
  * written at all, it says why.
  */
-function attempt(document: XitDocument, candidates: readonly Block[][], expected: readonly Shape[], what: string): XitDocument {
+function attempt(document: XitDocument, candidates: readonly Block[][], expected: readonly Shape[], action: string): XitDocument {
   let unwritable: string | null = null;
   let anyWritten = false;
   for (const blocks of candidates) {
@@ -185,51 +179,56 @@ function attempt(document: XitDocument, candidates: readonly Block[][], expected
     if (sameShapes(getGroups(parse(text)), expected)) return next;
   }
   const why = !anyWritten && unwritable ? `. ${unwritable}` : ' without changing the rest of the document.';
-  throw new XitEditError(`Couldn't ${what}${why}`);
+  throw new XitEditError(`Couldn't ${action}${why}`);
 }
 
 function sameShapes(groups: readonly Group[], expected: readonly Shape[]): boolean {
   return groups.length === expected.length && groups.every((g, i) => {
     const e = expected[i]!;
-    return g.title === e.title && g.items.length === e.items.length && g.items.every((item, j) => {
-      const other = e.items[j]!;
-      return item.status === other.status && item.priority === other.priority && item.description === other.description;
-    });
+    return g.title === e.title && g.items.length === e.items.length && g.items.every((item, j) => sameContent(item, e.items[j]!));
   });
 }
 
 /** Where a group's blocks end, past any invalid lines straight after them. */
-function withTrailingInvalid(blocks: readonly Block[], group: Group): number {
+function endWithTrailingInvalid(blocks: readonly Block[], group: Group): number {
   let end = group.end;
   while (blocks[end]?.type === 'invalid') end++;
   return end;
 }
 
 /**
- * Removes a group's blocks (up to `endOf`, by default its own end), and a
- * blank line before or after them if there is one.
+ * Removes a group's blocks (and the invalid lines straight after them, if
+ * asked), with the blank lines that separated it: at the start or end of the
+ * document all of them, and otherwise those before it (or else after it).
  */
 function removeGroupAt(
   document: XitDocument,
   groups: readonly Group[],
   group: number,
-  what: string,
-  endOf: (blocks: readonly Block[], group: Group) => number = (_, g) => g.end,
+  action: string,
+  { withTrailingInvalid = false } = {},
 ): XitDocument {
   const blocks = document.blocks;
   const { start } = groups[group]!;
-  const end = endOf(blocks, groups[group]!);
+  const end = withTrailingInvalid ? endWithTrailingInvalid(blocks, groups[group]!) : groups[group]!.end;
+  const isBlank = (index: number) => blocks[index]?.type === 'blank';
+  let before = start;
+  while (isBlank(before - 1)) before--;
+  let after = end;
+  while (isBlank(after)) after++;
+
   const candidates: Block[][] = [];
-  if (blocks[start - 1]?.type === 'blank') candidates.push(spliced(blocks, start - 1, end - start + 1));
-  if (blocks[end]?.type === 'blank') candidates.push(spliced(blocks, start, end - start + 1));
+  if (before === 0 || after === blocks.length) candidates.push(spliced(blocks, before, after - before));
+  if (before < start) candidates.push(spliced(blocks, before, end - before));
+  if (after > end) candidates.push(spliced(blocks, start, after - start));
   candidates.push(spliced(blocks, start, end - start));
   const expected = shapes(groups);
   expected.splice(group, 1);
-  return attempt(document, candidates, expected, what);
+  return attempt(document, candidates, expected, action);
 }
 
 /** Inserts a group's blocks before the group at `index` (or at the end), separated by blank lines. */
-function insertGroup(document: XitDocument, groups: readonly Group[], index: number, group: Block[], what: string): XitDocument {
+function insertGroup(document: XitDocument, groups: readonly Group[], index: number, group: Block[], action: string): XitDocument {
   const blocks = document.blocks;
   let candidates: Block[][];
   if (index < groups.length) {
@@ -246,23 +245,37 @@ function insertGroup(document: XitDocument, groups: readonly Group[], index: num
   const expected = shapes(groups);
   const title = group[0]?.type === 'title' ? group[0].text : null;
   expected.splice(index, 0, { title, items: group.filter((b): b is Item => b.type === 'item') });
-  return attempt(document, candidates, expected, what);
+  return attempt(document, candidates, expected, action);
+}
+
+/** Throws unless `index` is a group's index (or, with `orEnd`, the index just past the last). */
+function checkGroupIndex(groups: readonly Group[], index: number, { orEnd = false } = {}) {
+  const last = orEnd ? groups.length : groups.length - 1;
+  if (!Number.isInteger(index) || index < 0 || index > last) {
+    const hint = orEnd ? ` (${groups.length} adds one at the end)` : '';
+    throw new XitEditError(`There's no group ${index}: the document has ${groups.length} groups${hint}.`);
+  }
 }
 
 function groupAt(groups: readonly Group[], index: number): Group {
-  const group = Number.isInteger(index) ? groups[index] : undefined;
-  if (!group) throw new XitEditError(`There's no group ${index}: the document has ${groups.length} groups.`);
-  return group;
+  checkGroupIndex(groups, index);
+  return groups[index]!;
+}
+
+function checkPosition(position: number | undefined) {
+  if (position !== undefined && (!Number.isInteger(position) || position < 0)) {
+    throw new XitEditError(`Not a position in a group: ${position}.`);
+  }
 }
 
 /** Where among a group's items `position` falls: past the end means the end. */
 function positionIn(group: Group, position: number | undefined): number {
-  if (position === undefined) return group.items.length;
-  if (!Number.isInteger(position) || position < 0) throw new XitEditError(`Not a position in a group: ${position}.`);
-  return Math.min(position, group.items.length);
+  checkPosition(position);
+  return Math.min(position ?? group.items.length, group.items.length);
 }
 
-function indexOfItem(document: XitDocument, item: Item): number {
+/** The item's index in the document's blocks; throws if it isn't one of them. */
+function requireItem(document: XitDocument, item: Item): number {
   const index = document.blocks.indexOf(item);
   if (index === -1) throw new XitEditError("That item isn't in this document (pass one of its own blocks).");
   return index;

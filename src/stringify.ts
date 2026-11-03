@@ -1,6 +1,6 @@
 import { charAt, isBlankChar, isBlankLine } from './chars.ts';
 import { XitStringifyError } from './errors.ts';
-import { INDENT, PRIORITY, STATUS_CHARS, descriptionProblem } from './item.ts';
+import { INDENT, PRIORITY, STATUS_CHARS, descriptionProblem, sameContent } from './item.ts';
 import { parse } from './parse.ts';
 import type { Block, Item, Newline, Title, XitDocument } from './types.ts';
 
@@ -116,6 +116,5 @@ function itemLines(item: Item, fail: (message: string) => never): string[] {
 function sameItem(raw: string, item: Item): boolean {
   const { blocks } = parse(raw);
   const [only] = blocks;
-  return blocks.length === 1 && only?.type === 'item' && only.status === item.status &&
-    only.priority === item.priority && only.description === item.description;
+  return blocks.length === 1 && only?.type === 'item' && sameContent(only, item);
 }

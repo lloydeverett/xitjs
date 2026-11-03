@@ -44,7 +44,9 @@ Work test-first: write the test, see it fail, then make it pass. Run
   `test/round-trip.test.ts`:
   1. `stringify(parse(s)) === s` for any `s` with one kind of line ending.
   2. `parse(stringify(doc))` gives back `doc` for any document `stringify`
-     accepts. It throws `XitStringifyError` rather than break this.
+     accepts. It throws `XitStringifyError` rather than break this. (One
+     exception: a document with no lines reads back with `finalNewline:
+     true` whatever it had, as there's no final newline to keep.)
   A change to either side must keep both.
 - `stringify` writes an item's `raw` source only if re-parsing it gives the
   same status, priority and description. `tags` and `dueDate` are derived

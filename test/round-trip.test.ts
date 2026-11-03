@@ -86,6 +86,17 @@ describe('round trip: syntax guide', () => {
   });
 });
 
+describe('round trip: a document with no lines', () => {
+  test("is written as '' whatever its finalNewline, and reads back with finalNewline: true", () => {
+    // With no lines there's no final newline to keep or leave out: the one
+    // place parse(stringify(doc)) can differ from doc.
+    for (const finalNewline of [true, false]) {
+      assert.equal(stringify({ blocks: [], finalNewline }), '');
+      assert.equal(parse(stringify({ blocks: [], finalNewline })).finalNewline, true);
+    }
+  });
+});
+
 describe('round trip: mixed line endings', () => {
   test('are written with the first one, and then read back the same', () => {
     const doc = parse('[ ] a\r\n    b\n[ ] c\r\n\n');

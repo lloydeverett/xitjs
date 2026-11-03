@@ -53,6 +53,16 @@ export function descriptionProblem(description: string): string | null {
   return null;
 }
 
+type ItemContent = Pick<Item, 'status' | 'priority' | 'description'>;
+
+/**
+ * Whether two items say the same: the same status, priority and description,
+ * which is all that's written (their tags and due date follow from it).
+ */
+export function sameContent(a: ItemContent, b: ItemContent): boolean {
+  return a.status === b.status && a.priority === b.priority && a.description === b.description;
+}
+
 /** An item with its derived fields worked out from its description. */
 export function makeItem(status: Status, priority: number, description: string, raw?: string): Item {
   const { tags, dueDate } = parseDescription(description);

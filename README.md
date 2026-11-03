@@ -153,13 +153,15 @@ group). Each returns a new document. A group is its index in
 | `addItem(doc, group, item, position?)` | Adds an item (text, an `ItemInit`, or an item) at the end of a group, or at `position` among its items. |
 | `removeItem(doc, item)` | Removes an item. A group without a title goes with its last item. |
 | `moveItem(doc, item, group, position?)` | Moves an item to a group, at the end or so it ends up at `position`, keeping its formatting. |
-| `addGroup(doc, { title?, items? }, index?)` | Adds a group at the end, or before the group at `index`. |
+| `addGroup(doc, { title?, items? }, index?)` | Adds a group at the end, or before the group at `index`. It needs a title or an item. |
 | `removeGroup(doc, group)` | Removes a group, with any invalid lines straight after its items. |
 | `moveGroup(doc, from, to)` | Moves a group so it ends up at `to`, with any invalid lines straight after its items. |
 | `setGroupTitle(doc, group, title \| null)` | Renames a group, gives it a title, or (with `null`) removes its title. |
 
-Blank lines are added or removed as needed: one separates groups, and a
-title must come first or after one. Like the item edits, each tries the
+Blank lines are added or removed as needed: one separates groups, a
+title must come first or after one, and a group that goes takes the blank
+lines that separated it (all of them at the start or end of the
+document). Like the item edits, each tries the
 tidiest change, and keeps it only if the document can still be written and
 reads back with exactly the intended groups. Every other line is written
 back as it was. If an edit can't be made that way, it throws a
@@ -279,6 +281,7 @@ interface Diagnostic {
 | `[ ]    ! a`, `[ ] .!. a`, shaded "invalid" in the guide | Valid items whose description starts with that text, with a warning. That's what the spec's grammar says. |
 | A due date that doesn't exist (`2022-02-30`, `2021-W53`) | Not a due date, with a warning. |
 | An invalid line between items | Ends the group (the spec says a group's items are *consecutive*). |
+| Does an empty document have a final newline? | Yes: `parse('')` gives `finalNewline: true`, so lines added to it later end with one. With no lines there's nothing to keep, so it's the one document that may not read back exactly as built. |
 | Writing an item with no priority whose description starts like one (`! a`) | Written as `[ ] . ! a`: a lone dot is a priority of 0, so it reads back the same. |
 | Combining marks in tag names (`#ta` + U+0308 + `g`, which shows as `#täg`) | Not part of the name: the spec says letters (Unicode L), and a mark is category M. |
 | Is a tag one token, or a name and a value? | One `tag` token, as the syntax guide highlights it. The token carries the parsed `tag` (`{ name, value }`). |

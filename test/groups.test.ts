@@ -180,6 +180,14 @@ describe('removeGroup', () => {
     assert.equal(edited('[*] bad\n[ ] x\n\nB\n', (d) => removeGroup(d, 0)), '[*] bad\n\nB\n');
   });
 
+  test('the first or last group takes all the blank lines between it and the rest', () => {
+    assert.equal(edited('[ ] a\n\n\n\nB\n[ ] b\n', (d) => removeGroup(d, 0)), 'B\n[ ] b\n');
+    assert.equal(edited('A\n\n\n\nB\n', (d) => removeGroup(d, 1)), 'A\n');
+    assert.equal(edited('[ ] a\n\n\n\nB\n[ ] b\n', (d) => moveItem(d, item(d, 'a'), 1)), 'B\n[ ] b\n[ ] a\n');
+    // A group in the middle takes one.
+    assert.equal(edited('A\n\n\nB\n\n\nC\n', (d) => removeGroup(d, 1)), 'A\n\n\nC\n');
+  });
+
   test('takes the invalid lines straight after its items with it', () => {
     assert.equal(edited('A\n[ ] a\n[*] bad\n    worse\n\nB\n', (d) => removeGroup(d, 0)), 'B\n');
     assert.equal(edited('A\n[ ] a\n[*] bad\n[ ] b\n', (d) => removeGroup(d, 0)), '[ ] b\n');
@@ -360,6 +368,8 @@ describe('editing groups: properties', () => {
         for (const other of getItems(doc)) {
           if (other !== edit.touches) assert.ok(raws.has(other.raw) || !edit.keepsItems, `${edit.name}: ${other.raw}`);
         }
+        // A moved item keeps its source text too.
+        if (edit.name.startsWith('moveItem')) assert.ok(raws.has(edit.touches!.raw), `${edit.name}: ${edit.touches!.raw}`);
       }
     }), runs(1000));
     assert.ok(applied > 10 * refused, `${applied} edits applied, ${refused} refused`);

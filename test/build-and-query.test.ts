@@ -56,8 +56,9 @@ describe('createDocument', () => {
     ]);
   });
 
-  test('no groups is an empty document', () => {
+  test('no groups is an empty document, which reads back the same', () => {
     assert.equal(stringify(createDocument()), '');
+    assert.deepEqual(parse(stringify(createDocument())), createDocument());
   });
 });
 
