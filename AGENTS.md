@@ -46,8 +46,13 @@ Work test-first: write the test, see it fail, then make it pass. Run
 - The one description scanner is `scanDescription` (`src/description.ts`):
   tags, due dates and their warnings. `parse` maps its description offsets
   back to source offsets.
+- `setTag`, `removeTag` and `setDueDate` (`src/edit.ts`) edit the
+  description text. Each tries the tidiest change first and keeps it only
+  if re-reading gives exactly the intended tags and due date; otherwise it
+  throws `XitEditError`. Keep that check: it's what stops an edit from
+  quietly changing text next to it.
 - `test/fixtures/syntax-guide.json` is generated (`scripts/guide_fixture.py`);
   don't edit it by hand. Where we read a guide example differently, it's
   listed in `DEVIATIONS` in `test/syntax-guide.test.ts`.
-- Write invisible or special characters as escapes (`'﻿'`,
-  `' '`), never as literal characters.
+- Write invisible or special characters as escapes (`'\uFEFF'`,
+  `'\u00a0'`), never as literal characters.

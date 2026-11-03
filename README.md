@@ -81,7 +81,8 @@ type DueDate = {
 `stringify` writes an item from its `status`, `priority` and `description`.
 `tags` and `dueDate` are worked out from the description: `parse`,
 `createItem` and `updateItem` fill them in. If you change a description by
-spreading (`{ ...item, description }`), use `updateItem` instead, or the
+spreading (`{ ...item, description }`), use `updateItem` (or the editing
+helpers below) instead, or the
 `tags` and `dueDate` in memory will be stale. What's written is right either
 way.
 
@@ -111,6 +112,31 @@ and a changed one is written in the standard form.
 | `createItem('text' \| { status?, priority?, description? })` | A new item. |
 | `updateItem(item, changes)` | A copy with changes applied and derived fields worked out again. |
 | `createDocument([{ title?, items? }, ...])` | A document of groups, with blank lines between them. |
+
+### Editing tags and due dates
+
+These rewrite an item's description and return a new item.
+
+| | |
+|---|---|
+| `setTag(item, name, value?)` | Rewrites the tag's first occurrence in place (keeping its spelling), or adds it at the end. A value is quoted only when it needs to be. |
+| `removeTag(item, name)` | Removes every occurrence, with the space next to it. |
+| `setDueDate(item, '2026-11-04' \| dueDate \| null)` | Rewrites the due date in place, or adds one at the end. `null` removes it, along with any later one that would then count. |
+
+Each edit re-reads the description, and keeps the change only if exactly
+the intended tags and due date come back. If the edit can't be made
+without changing anything else, it throws a `XitEditError`. That covers an
+invalid tag name (`my tag`), a value with both kinds of quote or a
+newline, a date that doesn't exist (`2026-02-30`), and text that would turn
+into a tag. For example, removing `#x` from `#x#y` would leave `#y`, which
+is a tag.
+
+```ts
+let item = createItem('Call mum');
+item = setTag(item, 'who', 'Mum & Dad'); // 'Call mum #who="Mum & Dad"'
+item = setDueDate(item, '2026-W45');     // 'Call mum #who="Mum & Dad" -> 2026-W45'
+item = removeTag(item, 'who');           // 'Call mum -> 2026-W45'
+```
 
 ### Diagnostics
 

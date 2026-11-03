@@ -26,3 +26,8 @@ export class XitStringifyError extends Error {
     this.blockIndex = blockIndex;
   }
 }
+
+/** Thrown by `setTag`, `removeTag` and `setDueDate` when an edit can't be made as asked. */
+export class XitEditError extends Error {
+  override name = 'XitEditError';
+}

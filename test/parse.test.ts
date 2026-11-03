@@ -65,7 +65,7 @@ describe('parse: blocks', () => {
 
   test('a blank line is empty or whitespace only (including NBSP and tab), and ends an item', () => {
     assert.deepEqual(kinds('[ ] a\n    \n    b\n'), ['item', 'blank', 'invalid']);
-    assert.deepEqual(kinds('  \n\t\n \t \n'), ['blank', 'blank', 'blank']);
+    assert.deepEqual(kinds('\u00a0\u2003\n\t\n \t \n'), ['blank', 'blank', 'blank']);
     assert.deepEqual(parse('[ ] a\n  \t\n').blocks[1], { type: 'blank', raw: '  \t' });
   });
 
@@ -159,13 +159,13 @@ describe('validate', () => {
       ['[] a', 'invalid-checkbox'],
       ['[ x ] a', 'invalid-checkbox'],
       ['[Todos]', 'invalid-checkbox'],
-      ['[ ] a', 'invalid-checkbox'],
+      ['[\u00a0] a', 'invalid-checkbox'],
       ['[ ]a', 'missing-space-after-checkbox'],
       ['[x]\ta', 'missing-space-after-checkbox'],
       [' Todos', 'bad-indentation'],
       ['[ ] a\n   b', 'bad-indentation'],
       ['[ ] a\n\tb', 'bad-indentation'],
-      ['[ ] a\n    b', 'bad-indentation'],
+      ['[ ] a\n\u00a0\u00a0\u00a0\u00a0b', 'bad-indentation'],
       ['[ ] a\n\n    b', 'bad-indentation'],
       ['[ ] a\nTodos', 'title-without-blank-line'],
       ['One\nTwo', 'title-without-blank-line'],

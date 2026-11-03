@@ -12,6 +12,8 @@
 > - **One more `stringify` refusal.** A first line starting with U+FEFF is
 >   refused unless `bom` is set.
 > - **Added `pnpm test:fuzz` and `pnpm test:dist`.**
+> - **Description editing helpers added since:** `setTag`, `removeTag` and
+>   `setDueDate` (`src/edit.ts`).
 
 A dependency-free TypeScript library that parses [x]it! documents
 (spec v1.1, `docs/xit-specification-1.1.md`) into plain data, and writes
@@ -191,6 +193,5 @@ all taken from the syntax guide): `malformed-priority` (`.!.`),
 
 ## Not in v1 (the design leaves room for them)
 
-- Description editing helpers: `addTag`, `removeTag`, `setDueDate`.
 - `tokenize(source)` returning offset tokens for editor highlighting, for
   a CodeMirror `StreamLanguage`.

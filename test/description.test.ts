@@ -169,7 +169,7 @@ describe('parseDescription: due dates', () => {
     assert.deepEqual(pieces('a,-> 2022.'), ['"a,"', 'due-date:-> 2022', '"."']);
     // '#' is punctuation, so the due date ends there; but straight after a digit, it doesn't start a tag.
     assert.deepEqual(pieces('-> 2022#tag'), ['due-date:-> 2022', '"#tag"']);
-    assert.deepEqual(pieces('a -> 2022\tb'), ['"a "', 'due-date:-> 2022', '"\\tb"']);
+    assert.deepEqual(pieces('a\u00a0-> 2022\tb'), ['"a\u00a0"', 'due-date:-> 2022', '"\\tb"']);
   });
 
   test('anything else next to it means it is not a due date', () => {
@@ -182,7 +182,7 @@ describe('parseDescription: due dates', () => {
 
   test('the prefix must be exactly a hyphen, a greater-than sign and one space', () => {
     for (const d of ['->2022-01-31', '→ 2022-01-31', '->   2022-01-31', '>2022-01-31', '- > 2022',
-      '-> 2022', 'Do until ->\n2022-01-31']) {
+      '->\u00a02022', 'Do until ->\n2022-01-31']) {
       assert.equal(parseDescription(d).dueDate, null, JSON.stringify(d));
     }
   });

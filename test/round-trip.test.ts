@@ -14,7 +14,7 @@ const CORPUS: Record<string, string> = {
   empty: '',
   'one newline': '\n',
   'only blank lines': '\n\n   \n\t\n',
-  'blank lines of whitespace': '[ ] a\n  \n \n\t \n[ ] b\n',
+  'blank lines of whitespace': '[ ] a\n  \n\u00a0\n\t \n[ ] b\n',
   'several blank lines between groups': 'A\n[ ] a\n\n\n\nB\n[ ] b\n',
   'leading blank lines': '\n\nTitle\n[ ] a\n',
   'trailing blank lines': '[ ] a\n\n\n',
@@ -30,7 +30,7 @@ const CORPUS: Record<string, string> = {
   'titles and groups': 'Todos\n[ ] a\n[x] b\n\nEmpty group\n\nMore\n[@] c\n',
   'unicode text': '今日は\n[ ] 小包を受け取る #σκληρά\n[ ] 💼 #𠀀 -> 2022\n\nΕλληνικά\n[x] ☀️\n',
   'lone carriage returns': '[ ] a\rb\nTi\rtle\n',
-  'non-breaking spaces': '[ ] x\n[ ] a\n    b\n',
+  'non-breaking spaces': '[ ]\u00a0x\n[ ] a\n\u00a0\u00a0\u00a0\u00a0b\n',
   'warnings only': '[ ]    ! a\n[ ] .!. b\n[ ] -> 2022-13-01\n[ ] -> 2022 -> 2023\n',
   'a realistic file':
     'Groceries\n[ ] Milk #shop\n[x] ! Eggs -> 2026-11-04\n[@] Bread #shop=bakery\n    (the sourdough one)\n\n' +
@@ -140,7 +140,7 @@ const runs = (n: number) => ({ numRuns: n * Number(process.env.XIT_FUZZ ?? 1) })
 
 /** Pieces of [x]it! syntax, plus whitespace and other characters that matter to it. */
 const fragment = fc.constantFrom(
-  '[ ]', '[x]', '[@]', '[~]', '[?]', '[', ']', '[X]', '[]', ' ', '    ', '\t', ' ', '\r',
+  '[ ]', '[x]', '[@]', '[~]', '[?]', '[', ']', '[X]', '[]', ' ', '    ', '\t', '\u00a0', '\r',
   '!', '!!', '.', '..', '#', '#tag', '=', '"', "'", '->', '-> ', '2022', '-01', '/01', '-31', '-W01', '-Q2', 'W', 'Q',
   '-', '/', '(', ')', 'a', 'Title', 'é', '今', '🥳', '̈', '\uFEFF',
 );
