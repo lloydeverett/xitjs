@@ -5,7 +5,7 @@ export { createItem, updateItem, createDocument, type ItemInit, type GroupInit }
 export { setTag, removeTag, setDueDate } from './edit.ts';
 export { getItems, getTag, hasTag, tagNamesEqual } from './query.ts';
 export {
-  getGroups, addItem, removeItem, moveItem, addGroup, removeGroup, moveGroup, setGroupTitle,
+  getGroups, addItem, removeItem, moveItem, parseItems, replaceItem, addGroup, removeGroup, moveGroup, setGroupTitle,
 } from './groups.ts';
 export { parseDescription } from './description.ts';
 export { parseDueDate } from './due-date.ts';

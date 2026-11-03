@@ -37,7 +37,16 @@ describe('updateItem', () => {
   test('keeps raw, so an unchanged item keeps its formatting', () => {
     const [item] = getItems(parse('[ ] ..! a\n'));
     assert.equal(stringify({ blocks: [updateItem(item!, {})] }), '[ ] ..! a\n');
-    assert.equal(stringify({ blocks: [updateItem(item!, { status: 'checked' })] }), '[x] ! a\n');
+    assert.equal(stringify({ blocks: [updateItem(item!, { priority: 2 })] }), '[ ] !! a\n');
+  });
+
+  test('a change of status alone changes only the checkbox', () => {
+    const [item] = getItems(parse('[ ] ..! a  #t\n    more\n'));
+    const checked = updateItem(item!, { status: 'checked' });
+    assert.equal(checked.raw, '[x] ..! a  #t\n    more');
+    assert.equal(stringify({ blocks: [checked] }), '[x] ..! a  #t\n    more\n');
+    // With another change too, the item is written afresh.
+    assert.equal(stringify({ blocks: [updateItem(item!, { status: 'checked', priority: 2 })] }), '[x] !! a  #t\n    more\n');
   });
 });
 

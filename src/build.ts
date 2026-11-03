@@ -1,4 +1,4 @@
-import { makeItem } from './item.ts';
+import { makeItem, STATUS_CHARS } from './item.ts';
 import type { Block, Item, Status, XitDocument } from './types.ts';
 
 export interface ItemInit {
@@ -27,15 +27,19 @@ export function itemFrom(input: string | ItemInit | Item): Item {
 /**
  * Returns a copy of `item` with `changes` applied and its tags and due date
  * worked out again. It keeps the item's `raw` source, which `stringify` uses
- * only if the item still matches it.
+ * only if the item still matches it; a change of status alone changes only
+ * the checkbox in it, so the item keeps its formatting.
  */
 export function updateItem(item: Item, changes: ItemInit): Item {
-  return makeItem(
-    changes.status ?? item.status,
-    changes.priority ?? item.priority,
-    changes.description ?? item.description,
-    item.raw,
-  );
+  const status = changes.status ?? item.status;
+  const priority = changes.priority ?? item.priority;
+  const description = changes.description ?? item.description;
+  let raw = item.raw;
+  // An item's source starts with its checkbox: `[`, the status's character, `]`.
+  if (raw !== undefined && status !== item.status && priority === item.priority && description === item.description) {
+    raw = `[${STATUS_CHARS[status]}]${raw.slice(3)}`;
+  }
+  return makeItem(status, priority, description, raw);
 }
 
 /** Makes a document of groups, with a blank line between each. */

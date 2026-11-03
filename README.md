@@ -113,7 +113,7 @@ and a changed one is written in the standard form.
 |---|---|
 | `stringify(doc, { newline?, finalNewline? })` | Write a document. Throws a `XitStringifyError` (with `.blockIndex` and `.reason`) if it can't be written so it reads back the same. Examples: a title after a non-blank line, a blank continuation line, a title starting with `[`. |
 | `createItem('text' \| { status?, priority?, description? })` | A new item. |
-| `updateItem(item, changes)` | A copy with changes applied and derived fields worked out again. |
+| `updateItem(item, changes)` | A copy with changes applied and derived fields worked out again. A change of status alone changes only the checkbox, keeping the item's formatting. |
 | `createDocument([{ title?, items? }, ...])` | A document of groups, with blank lines between them. Items can be text, `ItemInit`s or items. |
 
 ### Editing tags and due dates
@@ -157,6 +157,8 @@ group). Each returns a new document. A group is its index in
 | `removeGroup(doc, group)` | Removes a group, with any invalid lines straight after its items. |
 | `moveGroup(doc, from, to)` | Moves a group so it ends up at `to`, with any invalid lines straight after its items. |
 | `setGroupTitle(doc, group, title \| null)` | Renames a group, gives it a title, or (with `null`) removes its title. |
+| `parseItems(text)` | Reads text that should be one or more items and nothing else, such as an item's lines edited on their own. Throws a `XitEditError` saying which line isn't. |
+| `replaceItem(doc, item, items)` | Puts an item, or several (to split it), in an item's place. Items from `parseItems` keep how they're written. |
 
 Blank lines are added or removed as needed: one separates groups, a
 title must come first or after one, and a group that goes takes the blank
@@ -173,6 +175,9 @@ valid would make that line the first, and so a title.
 const [groceries] = getGroups(doc);
 const milk = groceries!.items.find((i) => i.description.startsWith('Milk'))!;
 doc = moveItem(doc, milk, 1, 0);
+
+// Edit one item's lines on their own, and put them back.
+doc = replaceItem(doc, milk, parseItems('[x] Milk\n    oat, if there is any'));
 ```
 
 ### Highlighting

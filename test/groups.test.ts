@@ -3,8 +3,8 @@ import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import fc from 'fast-check';
 import {
-  XitEditError, addGroup, addItem, createItem, getGroups, getItems, moveGroup, moveItem, parse, removeGroup,
-  removeItem, setGroupTitle, stringify, type Item, type XitDocument,
+  XitEditError, addGroup, addItem, createItem, getGroups, getItems, moveGroup, moveItem, parse, parseItems, removeGroup,
+  removeItem, replaceItem, setGroupTitle, stringify, type Item, type XitDocument,
 } from '../src/index.ts';
 import { runs, xitDocument } from './arbitraries.ts';
 
@@ -246,6 +246,62 @@ describe('setGroupTitle', () => {
   });
 });
 
+describe('parseItems', () => {
+  test('reads one item, or several, keeping how each is written', () => {
+    const [one] = parseItems('[x] ..! a\n    b');
+    assert.deepEqual([one!.status, one!.priority, one!.description, one!.raw], ['checked', 1, 'a\nb', '[x] ..! a\n    b']);
+    assert.deepEqual(parseItems('[ ] a\n[@] b\n    c\n').map((i) => i.description), ['a', 'b\nc']);
+    assert.deepEqual(parseItems('[ ] ').map((i) => i.description), ['']);
+  });
+
+  test('throws a XitEditError, saying why, for anything else', () => {
+    const cases: Array<[string, RegExp]> = [
+      ['', /no item/],
+      ['  \n', /no item/],
+      ['a', /line 1 isn't an item/],
+      ['[ ] a\n\n[ ] b', /line 2 is blank/],
+      ['[ ] a\nb', /line 2 isn't an item/],
+      ['[*] a', /line 1 isn't an item/],
+    ];
+    for (const [text, message] of cases) {
+      assert.throws(() => parseItems(text), { name: 'XitEditError', message }, JSON.stringify(text));
+    }
+  });
+});
+
+describe('replaceItem', () => {
+  test('puts another item in its place, as it is written', () => {
+    const source = 'A\n[ ] a\n[ ] b\n\nB\n[ ] c\n';
+    const doc = parse(source);
+    const next = replaceItem(doc, item(doc, 'a'), parseItems('[x] ..! a2\n    more'));
+    assert.equal(stringify(next), 'A\n[x] ..! a2\n    more\n[ ] b\n\nB\n[ ] c\n');
+  });
+
+  test('splits it into several', () => {
+    const doc = parse('A\n[ ] a\n[ ] b\n');
+    const next = replaceItem(doc, item(doc, 'a'), parseItems('[ ] a1\n[x] a2'));
+    assert.equal(stringify(next), 'A\n[ ] a1\n[x] a2\n[ ] b\n');
+  });
+
+  test('takes a single item, and keeps the other items as they were', () => {
+    const doc = parse('A\n[ ] a\n[ ] b\n');
+    const next = replaceItem(doc, item(doc, 'a'), createItem('z'));
+    assert.equal(stringify(next), 'A\n[ ] z\n[ ] b\n');
+    assert.equal(next.blocks[2], doc.blocks[2]);
+  });
+
+  test("writes the document's own line endings", () => {
+    const doc = parse('A\r\n[ ] a\r\n');
+    assert.equal(stringify(replaceItem(doc, item(doc, 'a'), parseItems('[ ] a\n    b'))), 'A\r\n[ ] a\r\n    b\r\n');
+  });
+
+  test('throws a XitEditError for an item not in the document, no items, or one that would change the rest', () => {
+    const doc = parse('A\n[ ] a\nnot a title\n');
+    assert.throws(() => replaceItem(doc, createItem('x'), createItem('y')), XitEditError);
+    assert.throws(() => replaceItem(doc, item(doc, 'a'), []), XitEditError);
+  });
+});
+
 // Property tests -------------------------------------------------------------
 
 /** A group by value: its title and its items' status, priority and description. */
@@ -318,8 +374,16 @@ function edits(doc: XitDocument, pick: number[]): Edit[] {
     const from = groups.findIndex((gr) => gr.items.includes(target));
     const at = groups[from]!.items.indexOf(target);
     const removed = (s: Shape) => s.with(from, { ...s[from]!, items: s[from]!.items.toSpliced(at, 1) });
+    const split = [createItem(`s${pick[4]}`), createItem({ status: 'checked', description: 't' })];
     out.push(
       { name: 'removeItem', touches: target, keepsItems: true, apply: (d) => removeItem(d, target), expect: (s) => prune(removed(s)) },
+      {
+        name: 'replaceItem',
+        touches: target,
+        keepsItems: true,
+        apply: (d) => replaceItem(d, target, split),
+        expect: (s) => s.with(from, { ...s[from]!, items: s[from]!.items.toSpliced(at, 1, ...split.map(itemKey)) }),
+      },
       {
         name: `moveItem to ${g} at ${position}`,
         touches: target,

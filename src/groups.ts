@@ -71,6 +71,46 @@ export function removeItem(document: XitDocument, item: Item): XitDocument {
 }
 
 /**
+ * Reads text that should be one or more items and nothing else, such as an
+ * item's lines being edited on their own. Each item keeps how it's written,
+ * so `replaceItem` puts it in a document as it is. Throws a `XitEditError`
+ * saying which line isn't part of an item.
+ */
+export function parseItems(text: string): Item[] {
+  const { blocks } = parse(text);
+  if (blocks.every((block) => block.type === 'blank')) throw new XitEditError("There's no item.");
+  const items: Item[] = [];
+  let line = 1;
+  for (const block of blocks) {
+    if (block.type === 'item') {
+      items.push(block);
+      line += (block.raw ?? '').split('\n').length;
+      continue;
+    }
+    if (block.type === 'blank') throw new XitEditError(`Not an item: line ${line} is blank, and a blank line ends an item.`);
+    const how = line === 1 ? 'a checkbox, such as `[ ]`, at its start' : 'a checkbox at its start, or four spaces to continue the item above';
+    throw new XitEditError(`Not an item: line ${line} isn't an item, as it needs ${how}.`);
+  }
+  return items;
+}
+
+/**
+ * Replaces an item (one of the document's own blocks) with another, or with
+ * several to split it, in its place in its group. Items from `parseItems`
+ * keep how they're written, as do the document's other items.
+ */
+export function replaceItem(document: XitDocument, item: Item, replacement: Item | readonly Item[]): XitDocument {
+  const items: Item[] = 'type' in replacement ? [replacement] : [...replacement];
+  const index = requireItem(document, item);
+  if (items.length === 0) throw new XitEditError('An item needs something to replace it (removeItem removes one).');
+  const groups = getGroups(document);
+  const from = groups.findIndex((g) => g.items.includes(item));
+  const expected = shapes(groups);
+  expected[from]!.items.splice(groups[from]!.items.indexOf(item), 1, ...items);
+  return attempt(document, [spliced(document.blocks, index, 1, ...items)], expected, 'replace the item');
+}
+
+/**
  * Moves an item (one of the document's own blocks) to a group, at the end or
  * so that it ends up at `position` among the group's items. It keeps its
  * formatting. A group without a title goes when its last item leaves it.
