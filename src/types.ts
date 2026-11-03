@@ -171,9 +171,7 @@ export type Token = TokenRange &
     | { type: 'due-date'; status: Status; dueDate: DueDate }
   );
 
-export type TokenType = Token['type'];
-
-export interface TokenRange {
+interface TokenRange {
   /** Offset of the token's first character. */
   from: number;
   /** Offset just past its last character. */
@@ -186,17 +184,13 @@ export interface TokenRange {
  * compared by value. Every blank line leaves the same
  * state as `startLineState()`, so tokenizing can restart at any blank line.
  */
-export interface LineState {
-  /** The kind of the line before: `blank` at the start of a document too. */
-  readonly previous: 'blank' | 'title' | 'item' | 'invalid';
+export type LineState =
+  /** Outside any item: at the start, or after a blank line, a title or an invalid line. */
+  | { readonly item: 'none'; readonly previous: 'blank' | 'title' | 'invalid' }
   /**
-   * `open` while an indented line would continue an item's description;
-   * `bare` after an item with no description on its first line, which can't
-   * continue.
+   * After an item with no description on its first line, and any indented
+   * lines after it: it can't continue.
    */
-  readonly item: 'none' | 'open' | 'bare';
-  /** The open item's status. */
-  readonly status: Status | null;
-  /** Whether the open item already has its due date. */
-  readonly hasDueDate: boolean;
-}
+  | { readonly item: 'bare'; readonly previous: 'item' | 'invalid' }
+  /** In an item that an indented line would continue. */
+  | { readonly item: 'open'; readonly previous: 'item'; readonly status: Status; readonly hasDueDate: boolean };

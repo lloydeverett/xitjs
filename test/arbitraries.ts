@@ -8,7 +8,7 @@ export const runs = (n: number) => ({ numRuns: n * Number(process.env.XIT_FUZZ ?
 const fragment = fc.constantFrom(
   '[ ]', '[x]', '[@]', '[~]', '[?]', '[', ']', '[X]', '[]', ' ', '    ', '\t', '\u00a0', '\r',
   '!', '!!', '.', '..', '#', '#tag', '=', '"', "'", '->', '-> ', '2022', '-01', '/01', '-31', '-W01', '-Q2', 'W', 'Q',
-  '-', '/', '(', ')', 'a', 'Title', 'é', '今', '🥳', '̈', '\uFEFF',
+  '-', '/', '(', ')', 'a', 'Title', 'é', '今', '🥳', '\u0308', '\uFEFF',
 );
 /** A line: any mix of fragments, but no line ending (and none hiding at its end). */
 export const line = fc.array(fragment, { maxLength: 12 }).map((parts) => parts.join('')).filter((l) => !l.endsWith('\r'));

@@ -59,7 +59,7 @@ describe('parseDescription: tags', () => {
   });
 
   test('a combining mark is not a letter, so it ends a tag (the spec says letters, Unicode L)', () => {
-    assert.deepEqual(pieces('#täg'), ['tag:#ta', '"̈g"']);
+    assert.deepEqual(pieces('#ta\u0308g'), ['tag:#ta', '"\u0308g"']);
   });
 
   test('a # with no name is not a tag', () => {

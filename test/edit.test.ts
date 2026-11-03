@@ -58,7 +58,7 @@ describe('setTag', () => {
   });
 
   test('refuses names and values that cannot be written', () => {
-    for (const name of ['', 'my tag', '#t', 't=v', 't!', 'täg']) {
+    for (const name of ['', 'my tag', '#t', 't=v', 't!', 'ta\u0308g']) {
       throwsEdit(() => setTag(item('a'), name), /name/);
     }
     throwsEdit(() => setTag(item('a'), 't', `both ' and "`), /quote/);

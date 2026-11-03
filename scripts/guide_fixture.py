@@ -54,7 +54,10 @@ def summarise(line):
     if outer == 'headline': return {'kind': 'title', 'text': text}, text
     assert outer in STATUSES, outer
     # Group consecutive runs of highlighted text into spans, with where each
-    # starts in the line (in UTF-16 code units, as JavaScript counts).
+    # starts in the line (in UTF-16 code units, as JavaScript counts). The
+    # guide's 'indent' spans aren't recorded: it uses them to show whitespace
+    # anywhere (extra spaces, inside '[  ]', before invalid lines), not to
+    # mark a continuation line's indentation.
     spans = []
     tokens = {'tag': [], 'due': []}
     prev = None; offset = 0

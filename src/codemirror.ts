@@ -5,7 +5,7 @@
 
 import { HighlightStyle, LanguageDescription, LanguageSupport, StreamLanguage } from '@codemirror/language';
 import { Tag, tags } from '@lezer/highlight';
-import { startLineState, tokenizeLine } from './tokenize.ts';
+import { shiftTokens, startLineState, tokenizeLine } from './tokenize.ts';
 import type { LineState, Status, Token } from './types.ts';
 
 /**
@@ -60,7 +60,7 @@ interface State {
   /** The state for the next line. */
   line: LineState;
   /** Whether the next line is the document's first (which may start with a byte-order mark). */
-  first: boolean;
+  firstLine: boolean;
   /** The tokens of the line being read, and the next one to emit. */
   tokens: readonly Token[];
   index: number;
@@ -69,21 +69,21 @@ interface State {
 /** [x]it! as a CodeMirror language. */
 export const xitLanguage = StreamLanguage.define<State>({
   name: 'xit',
-  startState: () => ({ line: startLineState(), first: true, tokens: [], index: 0 }),
+  startState: () => ({ line: startLineState(), firstLine: true, tokens: [], index: 0 }),
   copyState: (state) => ({ ...state }),
   blankLine(state) {
     state.line = tokenizeLine('', state.line).state;
-    state.first = false;
+    state.firstLine = false;
   },
   token(stream, state) {
     // Tokenize the whole line at its start; that also gives the state for the next one.
     if (stream.sol()) {
       // As in tokenize, a byte-order mark isn't part of the first line.
-      const bom = state.first && stream.string.startsWith('\uFEFF') ? 1 : 0;
+      const bom = state.firstLine && stream.string.startsWith('\uFEFF') ? 1 : 0;
       const { tokens, state: next } = tokenizeLine(stream.string.slice(bom), state.line);
       state.line = next;
-      state.first = false;
-      state.tokens = bom ? tokens.map((t) => ({ ...t, from: t.from + bom, to: t.to + bom })) : tokens;
+      state.firstLine = false;
+      state.tokens = bom ? shiftTokens(tokens, bom) : tokens;
       state.index = 0;
     }
     const token = state.tokens[state.index];

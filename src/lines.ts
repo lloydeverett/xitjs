@@ -14,15 +14,16 @@ export type LineKind =
    * checkbox and a space; its description starts at `description`.
    */
   | { kind: 'item'; status: Status; marker: string | null; description: number }
-  /** A continuation line: its description starts after `INDENT`. */
-  | { kind: 'continuation' };
+  /** A continuation line of an item with this status: its description starts after `INDENT`. */
+  | { kind: 'continuation'; status: Status };
 
 /** The state at the start of a document, and after every blank line. */
-export const START: LineState = Object.freeze({ previous: 'blank', item: 'none', status: null, hasDueDate: false });
+export const START: LineState = Object.freeze({ item: 'none', previous: 'blank' });
 
-function state(previous: LineState['previous'], item: LineState['item'] = 'none', status: Status | null = null): LineState {
-  return Object.freeze({ previous, item, status, hasDueDate: false });
-}
+const AFTER_TITLE: LineState = Object.freeze({ item: 'none', previous: 'title' });
+const AFTER_INVALID: LineState = Object.freeze({ item: 'none', previous: 'invalid' });
+const AFTER_BARE_ITEM: LineState = Object.freeze({ item: 'bare', previous: 'item' });
+const AFTER_BARE_INVALID: LineState = Object.freeze({ item: 'bare', previous: 'invalid' });
 
 /** What a line is, given the state the lines before it left, and the state after it. */
 export function readLine(text: string, before: LineState): { line: LineKind; state: LineState } {
@@ -32,7 +33,7 @@ export function readLine(text: string, before: LineState): { line: LineKind; sta
     const match = CHECKBOX.exec(text);
     if (!match) {
       const code = CHECKBOX_ANYHOW.test(text) ? 'missing-space-after-checkbox' : 'invalid-checkbox';
-      return { line: { kind: 'invalid', code }, state: state('invalid') };
+      return { line: { kind: 'invalid', code }, state: AFTER_INVALID };
     }
     // After the checkbox there's nothing, or one space and then the rest.
     const rest = text.slice(CHECKBOX_WIDTH + 1);
@@ -42,27 +43,29 @@ export function readLine(text: string, before: LineState): { line: LineKind; sta
     // CHECKBOX is built from STATUS_CHARS, so its character always has a status.
     const status = STATUS_BY_CHAR[match[1]!]!;
     // A description must start on the first line, so an item without one can't continue.
-    const item = isBlankLine(text.slice(description)) ? 'bare' : 'open';
-    return { line: { kind: 'item', status, marker, description }, state: state('item', item, item === 'open' ? status : null) };
+    const after: LineState = isBlankLine(text.slice(description))
+      ? AFTER_BARE_ITEM
+      : Object.freeze({ item: 'open', previous: 'item', status, hasDueDate: false });
+    return { line: { kind: 'item', status, marker, description }, state: after };
   }
 
   if (text.startsWith(INDENT)) {
     if (before.item === 'bare') {
-      return { line: { kind: 'invalid', code: 'description-not-on-first-line' }, state: state('invalid', 'bare') };
+      return { line: { kind: 'invalid', code: 'description-not-on-first-line' }, state: AFTER_BARE_INVALID };
     }
-    if (before.item === 'open') return { line: { kind: 'continuation' }, state: before };
+    if (before.item === 'open') return { line: { kind: 'continuation', status: before.status }, state: before };
   }
 
   if (isBlankChar(charAt(text, 0))) {
     const message = before.previous === 'item' ? 'A continuation line must be indented by exactly four spaces.' : undefined;
-    return { line: invalid('bad-indentation', message), state: state('invalid') };
+    return { line: invalid('bad-indentation', message), state: AFTER_INVALID };
   }
-  if (before.previous === 'blank') return { line: { kind: 'title' }, state: state('title') };
+  if (before.previous === 'blank') return { line: { kind: 'title' }, state: AFTER_TITLE };
 
   const message = before.previous === 'title'
     ? 'A group has at most one title: a title must be the first line, or come after a blank line.'
     : undefined;
-  return { line: invalid('title-without-blank-line', message), state: state('invalid') };
+  return { line: invalid('title-without-blank-line', message), state: AFTER_INVALID };
 }
 
 function invalid(code: DiagnosticCode, message: string | undefined): LineKind {

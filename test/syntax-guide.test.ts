@@ -3,7 +3,7 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { parse, parseDescription, tokenize, validate, type Item, type XitDocument } from '../src/index.ts';
+import { parse, parseDescription, tokenize, validate, type Item, type Token, type XitDocument } from '../src/index.ts';
 
 /** A highlighted piece of a line: its kind, its text, and where it starts in the line. */
 type Span = [kind: 'checkbox' | 'priority' | 'tag' | 'due', text: string, from: number];
@@ -53,9 +53,13 @@ const DEVIATIONS: Record<string, { line: Line; warning: string }> = {
   },
 };
 
-/** Our document, line by line, in the fixture's terms (without spans: see `spans`). */
-function toLines(document: XitDocument): Line[] {
-  const lines: Line[] = [];
+/** A fixture line without its spans, which `parse` doesn't give (see `spans`). */
+type ParsedLine = DistributiveOmit<Line, 'spans'>;
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
+/** Our document, line by line, in the fixture's terms. */
+function toLines(document: XitDocument): ParsedLine[] {
+  const lines: ParsedLine[] = [];
   for (const block of document.blocks) {
     if (block.type === 'blank' || block.type === 'invalid') lines.push({ kind: block.type });
     else if (block.type === 'title') lines.push({ kind: 'title', text: block.text });
@@ -64,7 +68,7 @@ function toLines(document: XitDocument): Line[] {
   return lines;
 }
 
-function itemLines(item: Item): Line[] {
+function itemLines(item: Item): ParsedLine[] {
   const texts = item.description.split('\n');
   const tags: string[][] = texts.map(() => []);
   const due: string[][] = texts.map(() => []);
@@ -74,14 +78,16 @@ function itemLines(item: Item): Line[] {
     else if (segment.type === 'due-date') due[line]!.push(segment.text);
     else line += segment.text.split('\n').length - 1;
   }
-  return texts.map((text, i) =>
+  return texts.map((text, i): ParsedLine =>
     i === 0
       ? { kind: 'item', status: item.status, priority: item.priority, text, tags: tags[i]!, due: due[i]! }
       : { kind: 'continuation', status: item.status, text, tags: tags[i]!, due: due[i]! },
-  ) as Line[];
+  );
 }
 
-const SPAN_KINDS = { checkbox: 'checkbox', priority: 'priority', tag: 'tag', 'due-date': 'due' } as const;
+const SPAN_KINDS: Partial<Record<Token['type'], Span[0]>> = {
+  checkbox: 'checkbox', priority: 'priority', tag: 'tag', 'due-date': 'due',
+};
 
 /** Our tokens, line by line, in the fixture's terms: the highlighted spans. */
 function spans(source: string): Span[][] {
@@ -91,7 +97,7 @@ function spans(source: string): Span[][] {
     const line: Span[] = [];
     for (const token of tokens) {
       if (token.from < start || token.to > start + text.length) continue;
-      const kind = SPAN_KINDS[token.type as keyof typeof SPAN_KINDS];
+      const kind = SPAN_KINDS[token.type];
       if (kind) line.push([kind, source.slice(token.from, token.to), token.from - start]);
     }
     start += text.length + 1;
@@ -99,10 +105,10 @@ function spans(source: string): Span[][] {
   });
 }
 
-function withoutSpans(line: Line): Line {
+function withoutSpans(line: Line): ParsedLine {
   if (!('spans' in line)) return line;
   const { spans: _, ...rest } = line;
-  return rest as Line;
+  return rest;
 }
 
 describe('syntax guide', () => {

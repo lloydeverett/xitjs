@@ -17,10 +17,15 @@ export function tokenize(source: string): Token[] {
   let state = START;
   for (const line of splitLines(source, bom).lines) {
     const result = tokenizeLine(line.text, state);
-    for (const token of result.tokens) tokens.push({ ...token, from: token.from + line.start, to: token.to + line.start });
+    tokens.push(...shiftTokens(result.tokens, line.start));
     state = result.state;
   }
   return tokens;
+}
+
+/** Tokens with their offsets moved on by `by`. */
+export function shiftTokens(tokens: readonly Token[], by: number): Token[] {
+  return tokens.map((token) => ({ ...token, from: token.from + by, to: token.to + by }));
 }
 
 /** The state to tokenize a document's first line with. */
@@ -52,26 +57,29 @@ export function tokenizeLine(text: string, state: LineState): { tokens: Token[];
         const from = CHECKBOX_WIDTH + 1;
         tokens.push({ type: 'priority', status, from, to: from + marker.length });
       }
-      return description(text, line.description, status, tokens, next);
+      return addDescriptionTokens(text, line.description, status, tokens, next);
     }
     case 'continuation': {
-      // readLine only finds a continuation line while an item is open, and an open item has a status.
-      const status = state.status!;
+      const { status } = line;
       const tokens: Token[] = [{ type: 'indent', status, from: 0, to: INDENT.length }];
-      return description(text, INDENT.length, status, tokens, next);
+      return addDescriptionTokens(text, INDENT.length, status, tokens, next);
     }
   }
 }
 
-/** Adds the tokens of a line's description, which starts at `start`. */
-function description(
+/**
+ * Adds the tokens of a line's description, which starts at `start`, and
+ * notes in the state if the item now has its due date.
+ */
+function addDescriptionTokens(
   text: string,
   start: number,
   status: Status,
   tokens: Token[],
   state: LineState,
 ): { tokens: Token[]; state: LineState } {
-  const scanned = scanDescription(text.slice(start), state.hasDueDate);
+  const hadDueDate = state.item === 'open' && state.hasDueDate;
+  const scanned = scanDescription(text.slice(start), hadDueDate);
   let from = start;
   for (const segment of scanned.segments) {
     const to = from + segment.text.length;
@@ -80,6 +88,6 @@ function description(
     else tokens.push({ type: 'text', status, from, to });
     from = to;
   }
-  const hasDueDate = state.hasDueDate || scanned.dueDate !== null;
-  return { tokens, state: hasDueDate === state.hasDueDate ? state : Object.freeze({ ...state, hasDueDate }) };
+  if (state.item !== 'open' || hadDueDate || scanned.dueDate === null) return { tokens, state };
+  return { tokens, state: Object.freeze({ ...state, hasDueDate: true }) };
 }

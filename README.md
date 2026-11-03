@@ -248,7 +248,8 @@ interface Diagnostic {
 | A due date that doesn't exist (`2022-02-30`, `2021-W53`) | Not a due date, with a warning. |
 | An invalid line between items | Ends the group (the spec says a group's items are *consecutive*). |
 | Writing an item with no priority whose description starts like one (`! a`) | Written as `[ ] . ! a`: a lone dot is a priority of 0, so it reads back the same. |
-| Combining marks in tag names (`#täg`) | Not part of the name: the spec says letters (Unicode L), and a mark is category M. |
+| Combining marks in tag names (`#ta` + U+0308 + `g`, which shows as `#täg`) | Not part of the name: the spec says letters (Unicode L), and a mark is category M. |
+| Is a tag one token, or a name and a value? | One `tag` token, as the syntax guide highlights it. The token carries the parsed `tag` (`{ name, value }`). |
 | Year `0000` | Allowed (ISO 8601's proleptic Gregorian calendar). A week whose Sunday falls in the year 10000 is not. |
 
 ## Development
