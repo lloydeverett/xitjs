@@ -1,0 +1,1721 @@
+{
+ "source": "https://xit.jotaen.net/syntax-guide",
+ "retrieved": "2026-11-03",
+ "note": "Generated from the guide's highlighted HTML (one listing per document). Do not edit by hand; deviations are listed in test/syntax-guide.test.ts.",
+ "listings": [
+  {
+   "section": "Status",
+   "annotation": "A checkbox can have one of five statuses: open, checked, ongoing, obsolete, in-question.",
+   "source": "[ ] Open\n[x] Checked\n[@] Ongoing\n[~] Obsolete\n[?] In Question\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Open",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "checked",
+     "priority": 0,
+     "text": "Checked",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "ongoing",
+     "priority": 0,
+     "text": "Ongoing",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "obsolete",
+     "priority": 0,
+     "text": "Obsolete",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "in-question",
+     "priority": 0,
+     "text": "In Question",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Status",
+   "annotation": "Any other character for the status is invalid.",
+   "source": "[*] Invalid\n[o] Invalid\n[X] Invalid (uppercase)\n[ ] Invalid (non-breaking space)\n",
+   "lines": [
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    }
+   ]
+  },
+  {
+   "section": "Status",
+   "annotation": "It’s also invalid if the status character is missing, or if it contains extra characters.",
+   "source": "[] Invalid\n[  ] Invalid\n[ x ] Invalid\n[@@] Invalid\n",
+   "lines": [
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    }
+   ]
+  },
+  {
+   "section": "Status",
+   "annotation": "The checkbox cannot be preceded by whitespace.",
+   "source": " [x] Invalid\n    [x] Invalid\n",
+   "lines": [
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "The checkbox can be followed by a description, which is separated by one space from the checkbox.",
+   "source": "[ ] Do this\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "Additional spaces can appear, which then belong to the description copy.",
+   "source": "[ ]   Do this\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "  Do this",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "The description can be absent, or all spaces.",
+   "source": "[ ]\n[ ] \n[ ]       \n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "      ",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "The space separator is mandatory.",
+   "source": "[ ]Invalid\n[ ]! Invalid\n[ ]. Invalid\n[ ]!!. Invalid\n[ ]#invalid\n[ ]->2022-02-16 Invalid\n",
+   "lines": [
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "The description can be continued on the next line, with increased indentation. Indentation is 4 spaces.",
+   "source": "[ ] This is a longer ...\n    description text\n[ ] And this one ...\n    is even ...\n    longer\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "This is a longer ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "description text",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "And this one ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "is even ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "longer",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "When the description styling is specific to the status, the styling should apply to all subsequent lines likewise.",
+   "source": "[x] These lines ...\n    should all ...\n    look the same\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "checked",
+     "priority": 0,
+     "text": "These lines ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "checked",
+     "text": "should all ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "checked",
+     "text": "look the same",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "There may be additional spaces after the indentation, which then belong to the description copy.",
+   "source": "[ ] This has some ...\n       more spaces\n[ ] And this one ...\n             as well\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "This has some ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "   more spaces",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "And this one ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "         as well",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "Indentation cannot be anything else than 4 spaces.",
+   "source": "[ ] The next line is ...\ninvalid (no space)\n[ ] The next line is ...\n invalid (1 spaces)\n[ ] The next line is ...\n  invalid (2 spaces)\n[ ] The next line is ...\n   invalid (3 spaces)\n[ ] The next line is ...\n    invalid (4 non-breaking spaces)\n[ ] The next line is ...\n\tinvalid (tab)\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "The next line is ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "The next line is ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "The next line is ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "The next line is ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "The next line is ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "The next line is ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "invalid"
+    }
+   ]
+  },
+  {
+   "section": "Description",
+   "annotation": "Square brackets in the description (even at the beginning of subsequent lines) are not recognised as checkboxes.",
+   "source": "[ ] A math formula: f[x]=x\n[ ] [Description text]\n[ ] [ ] Description text [ ]\n[ ] The next line is ...\n    [ ] all description text\n[ ] ! Check: [ #tags ] / [ -> 2022\n    (I.e., other tokens still work)\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "A math formula: f[x]=x",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "[Description text]",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "[ ] Description text [ ]",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "The next line is ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "[ ] all description text",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 1,
+     "text": "Check: [ #tags ] / [ -> 2022",
+     "tags": [
+      "#tags"
+     ],
+     "due": [
+      "-> 2022"
+     ]
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "(I.e., other tokens still work)",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Priority",
+   "annotation": "If a priority is specified, it must follow after the checkbox, and must be separated by one space from surrounding elements.",
+   "source": "[ ] ! This is important\n[ ] !!! This is very important\n[ ] !!!!!!!!!! This super important\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 1,
+     "text": "This is important",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 3,
+     "text": "This is very important",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 10,
+     "text": "This super important",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Priority",
+   "annotation": "The priority can be padded with dots on either side.",
+   "source": "[ ] ..! This is important\n[ ] !!. This is more important\n[ ] ... This is not important\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 1,
+     "text": "This is important",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 2,
+     "text": "This is more important",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "This is not important",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Priority",
+   "annotation": "Any additional spaces to the right belong to the description copy.",
+   "source": "[ ] !   Do something\n[ ] .   Do something\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 1,
+     "text": "  Do something",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "  Do something",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Priority",
+   "annotation": "There cannot be additional spaces to the left.",
+   "source": "[ ]    ! Do something\n[ ]    . Do something\n",
+   "lines": [
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    }
+   ]
+  },
+  {
+   "section": "Priority",
+   "annotation": "The dots cannot appear on both sides, or in between.",
+   "source": "[ ] .!. Invalid\n[ ] !.! Invalid\n",
+   "lines": [
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "invalid"
+    }
+   ]
+  },
+  {
+   "section": "Priority",
+   "annotation": "If the space between priority and description is missing, the exclamation mark is treated as part of the description.",
+   "source": "[ ] !This has regular priority\n[ ] .The dot is not priority\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "!This has regular priority",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": ".The dot is not priority",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Priority",
+   "annotation": "Any exclamation marks after the priority don’t belong to the priority anymore, but are treated as description.",
+   "source": "[ ] ! !!! This is important!\n[ ] !! ! ! This ! is also important\n[ ] !. ... This . is also important\n[ ] . ! This is not important\n[ ] The next line is also ...\n    !!! not important\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 1,
+     "text": "!!! This is important!",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 2,
+     "text": "! ! This ! is also important",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 1,
+     "text": "... This . is also important",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "! This is not important",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "The next line is also ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "!!! not important",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Due Date",
+   "annotation": "The description can contain a due date.",
+   "source": "[ ] -> 2022-01-31\n[ ] Do this -> 2022-01-31\n[ ] -> 2022-01-31 (something)\n[ ] Do something until ...\n    -> 2022-01-31\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01-31",
+     "tags": [],
+     "due": [
+      "-> 2022-01-31"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this -> 2022-01-31",
+     "tags": [],
+     "due": [
+      "-> 2022-01-31"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01-31 (something)",
+     "tags": [],
+     "due": [
+      "-> 2022-01-31"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do something until ...",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "-> 2022-01-31",
+     "tags": [],
+     "due": [
+      "-> 2022-01-31"
+     ]
+    }
+   ]
+  },
+  {
+   "section": "Due Date",
+   "annotation": "Due dates can be expressed through various patterns to reference a day, week, month, quarter or year.",
+   "source": "[ ] -> 2022-01-31\n[ ] -> 2022-01\n[ ] -> 2022\n[ ] -> 2022-W01\n[ ] -> 2022-Q1\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01-31",
+     "tags": [],
+     "due": [
+      "-> 2022-01-31"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01",
+     "tags": [],
+     "due": [
+      "-> 2022-01"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022",
+     "tags": [],
+     "due": [
+      "-> 2022"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-W01",
+     "tags": [],
+     "due": [
+      "-> 2022-W01"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-Q1",
+     "tags": [],
+     "due": [
+      "-> 2022-Q1"
+     ]
+    }
+   ]
+  },
+  {
+   "section": "Due Date",
+   "annotation": "Instead of a hyphen, the delimiter can also be a slash.",
+   "source": "[ ] -> 2022/01/31\n[ ] -> 2022/W01\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022/01/31",
+     "tags": [],
+     "due": [
+      "-> 2022/01/31"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022/W01",
+     "tags": [],
+     "due": [
+      "-> 2022/W01"
+     ]
+    }
+   ]
+  },
+  {
+   "section": "Due Date",
+   "annotation": "The delimiter style cannot be mixed, though.",
+   "source": "[ ] -> 2022-01/31\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01/31",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Due Date",
+   "annotation": "Redundant due dates are not recognised.",
+   "source": "[ ] -> 2022-01-31 -> 2022-01-31\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01-31 -> 2022-01-31",
+     "tags": [],
+     "due": [
+      "-> 2022-01-31"
+     ]
+    }
+   ]
+  },
+  {
+   "section": "Due Date",
+   "annotation": "Due dates can be surrounded by a space or punctuation (apart from a hyphen or slash).",
+   "source": "[ ] Do this soon -> 2022-01-31!!!\n[ ] Do this (-> 2022-01-31)\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this soon -> 2022-01-31!!!",
+     "tags": [],
+     "due": [
+      "-> 2022-01-31"
+     ]
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this (-> 2022-01-31)",
+     "tags": [],
+     "due": [
+      "-> 2022-01-31"
+     ]
+    }
+   ]
+  },
+  {
+   "section": "Due Date",
+   "annotation": "Any other surrounding character makes the due date unrecognised.",
+   "source": "[ ] ---> 2022-01-31\n[ ] Due-> 2022-01-31\n[ ] -> 2022-01-31very urgent\n[ ] -> 2022-01-31T10:00\n[ ] -> 2022-01-31-0\n[ ] -> 2022/01/31/0\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "---> 2022-01-31",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Due-> 2022-01-31",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01-31very urgent",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01-31T10:00",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022-01-31-0",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "-> 2022/01/31/0",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Due Date",
+   "annotation": "The prefix must be exactly: a hyphen, a greater-than sign, and a space. Otherwise, the due date is not recognised.",
+   "source": "[ ] ->2022-01-31\n[ ] → 2022-01-31\n[ ] ->   2022-01-31\n[ ] >2022-01-31\n[ ] Do until ->\n    2022-01-31\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "->2022-01-31",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "→ 2022-01-31",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "->   2022-01-31",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": ">2022-01-31",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do until ->",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "2022-01-31",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "Description can contain tags. A tag starts with a hashtag, followed by letters (as of the Unicode letter category), digits, hyphens, or underscores.",
+   "source": "[ ] #tag\n[ ] #T-A-G\n[ ] #--tag--\n[ ] #__tag__\n[ ] #t_a_g\n[ ] #123\n[ ] #___\n[ ] #---\n[ ] #1t2a3g\n[ ] #täg\n[ ] #今日は\n[ ] #გამარჯობა\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag",
+     "tags": [
+      "#tag"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#T-A-G",
+     "tags": [
+      "#T-A-G"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#--tag--",
+     "tags": [
+      "#--tag--"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#__tag__",
+     "tags": [
+      "#__tag__"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#t_a_g",
+     "tags": [
+      "#t_a_g"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#123",
+     "tags": [
+      "#123"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#___",
+     "tags": [
+      "#___"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#---",
+     "tags": [
+      "#---"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#1t2a3g",
+     "tags": [
+      "#1t2a3g"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#täg",
+     "tags": [
+      "#täg"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#今日は",
+     "tags": [
+      "#今日は"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#გამარჯობა",
+     "tags": [
+      "#გამარჯობა"
+     ],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "There can be multiple tags per description.",
+   "source": "[ ] This #text contains #tags\n[ ] #Actually, it #has a #LOT.\n    Even on the #next-line!\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "This #text contains #tags",
+     "tags": [
+      "#text",
+      "#tags"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#Actually, it #has a #LOT.",
+     "tags": [
+      "#Actually",
+      "#has",
+      "#LOT"
+     ],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "Even on the #next-line!",
+     "tags": [
+      "#next-line"
+     ],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "The tag is terminated by the first character that is not allowed in tags.",
+   "source": "[ ] This is a #tag.\n[ ] Tags: #tag1/#tag2\n[ ] #t-a-g!\n[ ] #--tag--?\n[ ] #--tag--:text\n[ ] (#tag)\n[ ] #tag🥳\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "This is a #tag.",
+     "tags": [
+      "#tag"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Tags: #tag1/#tag2",
+     "tags": [
+      "#tag1",
+      "#tag2"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#t-a-g!",
+     "tags": [
+      "#t-a-g"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#--tag--?",
+     "tags": [
+      "#--tag--"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#--tag--:text",
+     "tags": [
+      "#--tag--"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "(#tag)",
+     "tags": [
+      "#tag"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag🥳",
+     "tags": [
+      "#tag"
+     ],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "If there is no tag name, it’s not recognised.",
+   "source": "[ ] Not a tag: #\n[ ] Not a tag: #=value\n[ ] Not a tag: #=\"value\"\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Not a tag: #",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Not a tag: #=value",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Not a tag: #=\"value\"",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "The tag can have a value. The value is separated by an equals sign, and it can contain the same characters than the tag name.",
+   "source": "[ ] #tag=value\n[ ] #t-a-g=v-a-l-u-e\n[ ] #国=日本\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag=value",
+     "tags": [
+      "#tag=value"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#t-a-g=v-a-l-u-e",
+     "tags": [
+      "#t-a-g=v-a-l-u-e"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#国=日本",
+     "tags": [
+      "#国=日本"
+     ],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "The value can be empty or absent.",
+   "source": "[ ] #tag=\n[ ] #tag=\"\"\n[ ] #tag=''\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag=",
+     "tags": [
+      "#tag="
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag=\"\"",
+     "tags": [
+      "#tag=\"\""
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag=''",
+     "tags": [
+      "#tag=''"
+     ],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "The number of tags per item is not limited.",
+   "source": "[ ] #tag1 #tag2 and #tag3\n[ ] #tag1='value' #tag2='value' and #tag3='value'\n[ ] #tag1=\"value\" #tag2=\"value\" and #tag3=\"value\"\n[ ] #tag1 #tag2='value' and #tag3=\"value\"\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag1 #tag2 and #tag3",
+     "tags": [
+      "#tag1",
+      "#tag2",
+      "#tag3"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag1='value' #tag2='value' and #tag3='value'",
+     "tags": [
+      "#tag1='value'",
+      "#tag2='value'",
+      "#tag3='value'"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag1=\"value\" #tag2=\"value\" and #tag3=\"value\"",
+     "tags": [
+      "#tag1=\"value\"",
+      "#tag2=\"value\"",
+      "#tag3=\"value\""
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag1 #tag2='value' and #tag3=\"value\"",
+     "tags": [
+      "#tag1",
+      "#tag2='value'",
+      "#tag3=\"value\""
+     ],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "For the tag value to contain other characters, the value can be quoted. In this case, the value is terminated by the closing quote.",
+   "source": "[ ] #tag=\"v a l u e\"\n[ ] #tag='v!a.l?u+e'\n[ ] #tag='foo'bar\n[ ] #tag='foo'-bar\n[ ] #tag='foo'!!\n[ ] (#tag=\"bar\")\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag=\"v a l u e\"",
+     "tags": [
+      "#tag=\"v a l u e\""
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag='v!a.l?u+e'",
+     "tags": [
+      "#tag='v!a.l?u+e'"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag='foo'bar",
+     "tags": [
+      "#tag='foo'"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag='foo'-bar",
+     "tags": [
+      "#tag='foo'"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag='foo'!!",
+     "tags": [
+      "#tag='foo'"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "(#tag=\"bar\")",
+     "tags": [
+      "#tag=\"bar\""
+     ],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "Backslashes don’t have special meaning, i.e. escaping a quotation is not supported.",
+   "source": "[ ] #tag='It\\'s great'\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag='It\\'s great'",
+     "tags": [
+      "#tag='It\\'"
+     ],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Tags",
+   "annotation": "If the closing quote is missing (or doesn’t match), the value is disregarded altogether. That implies that a tag value cannot span multiple lines.",
+   "source": "[ ] #tag=\"v a l u e\n[ ] #tag=\"v a l u e'\n[ ] #tag=\"hello\n    World!\"\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag=\"v a l u e",
+     "tags": [
+      "#tag="
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag=\"v a l u e'",
+     "tags": [
+      "#tag="
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "#tag=\"hello",
+     "tags": [
+      "#tag="
+     ],
+     "due": []
+    },
+    {
+     "kind": "continuation",
+     "status": "open",
+     "text": "World!\"",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Groups",
+   "annotation": "When consecutive items are surrounded by blank lines, they are considered to be a group.",
+   "source": "[ ] Item 1 of group\n[ ] Item 2 of group\n\n[ ] Item of another group\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Item 1 of group",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Item 2 of group",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "blank"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Item of another group",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Groups",
+   "annotation": "“Blank line” means either the line is empty, or it only consists of whitespace.",
+   "source": "[ ] Item\n\n[ ] Item\n         \n[ ] Item\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Item",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "blank"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Item",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "blank"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Item",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Groups",
+   "annotation": "An item cannot contain a blank line, even if the blank line is “indented” (i.e., has 4 spaces).",
+   "source": "[ ] Descrip-\n    \n    tion\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Descrip-",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "blank"
+    },
+    {
+     "kind": "invalid"
+    }
+   ]
+  },
+  {
+   "section": "Groups",
+   "annotation": "A group can be preceded by a headline.",
+   "source": "Todos\n[ ] Item 1\n[ ] Item 2\n",
+   "lines": [
+    {
+     "kind": "title",
+     "text": "Todos"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Item 1",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Item 2",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Groups",
+   "annotation": "If a headline is not followed by items, it refers to an empty group.",
+   "source": "Empty Group\n",
+   "lines": [
+    {
+     "kind": "title",
+     "text": "Empty Group"
+    }
+   ]
+  },
+  {
+   "section": "Groups",
+   "annotation": "The headline can neither start with whitespace, nor with an opening square bracket.",
+   "source": " Todos\n[ ] Do this\n\n    Todos\n[ ] Do this\n\n[Todos]\n[ ] Do this\n",
+   "lines": [
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "blank"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "blank"
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Groups",
+   "annotation": "A headline must be separated by a blank line from a preceding item.",
+   "source": "[ ] Do this\nTodos\n[ ] Do this\n",
+   "lines": [
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "invalid"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "Do this",
+     "tags": [],
+     "due": []
+    }
+   ]
+  },
+  {
+   "section": "Encoding",
+   "annotation": "The text of titles and descriptions (including tags) supports UTF-8 encoded text.",
+   "source": "今日は\n[ ] 小包を受け取る\n[x] 夕食を作る\n\nΕλληνικά\n[ ] 💼 δούλεψε #σκληρά\n[ ] απολαύστε τον #ήλιο ☀️\n",
+   "lines": [
+    {
+     "kind": "title",
+     "text": "今日は"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "小包を受け取る",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "checked",
+     "priority": 0,
+     "text": "夕食を作る",
+     "tags": [],
+     "due": []
+    },
+    {
+     "kind": "blank"
+    },
+    {
+     "kind": "title",
+     "text": "Ελληνικά"
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "💼 δούλεψε #σκληρά",
+     "tags": [
+      "#σκληρά"
+     ],
+     "due": []
+    },
+    {
+     "kind": "item",
+     "status": "open",
+     "priority": 0,
+     "text": "απολαύστε τον #ήλιο ☀️",
+     "tags": [
+      "#ήλιο"
+     ],
+     "due": []
+    }
+   ]
+  }
+ ]
+}

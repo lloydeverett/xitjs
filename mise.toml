@@ -1,0 +1,7 @@
+# Exact versions, released after the October 2026 eMudhra CA compromise was
+# fixed (Node 26.12.1, Oct 21). Pin pnpm only here, not in a packageManager
+# field too: pnpm would then fetch that version itself, and its
+# minimumReleaseAge refuses new releases.
+[tools]
+node = "26.13.0"
+pnpm = "12.16.0"

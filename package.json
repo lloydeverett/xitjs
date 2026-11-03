@@ -1,0 +1,33 @@
+{
+  "name": "xitjs",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Parse and write [x]it! (.xit) todo documents: spec-compliant, lossless, dependency-free",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "test": "node --test 'test/**/*.test.ts'",
+    "test:fuzz": "XIT_FUZZ=50 node --test test/round-trip.test.ts",
+    "test:watch": "node --test --watch 'test/**/*.test.ts'",
+    "test:dist": "tsc -p tsconfig.build.json && node test/dist-smoke.js",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+    "build": "tsc -p tsconfig.build.json",
+    "prepare": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "fast-check": "^4.10.2",
+    "typescript": "^7.0.2"
+  }
+}

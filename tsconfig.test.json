@@ -1,0 +1,9 @@
+{
+  // Tests run only on the pinned Node, so they may use newer APIs than the library.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "types": ["node"]
+  },
+  "include": ["src", "test"]
+}

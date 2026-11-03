@@ -1,0 +1,9 @@
+# Supply-chain hardening
+# Refuse package versions published less than 7 days ago (minutes).
+minimumReleaseAge: 10080
+# Refuse versions that publish with weaker provenance than earlier versions did.
+trustPolicy: no-downgrade
+# Fail the install if a dependency wants to run an install script we haven't decided on.
+strictDepBuilds: true
+# Packages allowed (true) or denied (false) to run install scripts. Vet before adding.
+allowBuilds: {}

@@ -1,0 +1,167 @@
+# xitjs
+
+Parse and write [[x]it!](https://xit.jotaen.net/) todo documents
+([spec v1.1](docs/xit-specification-1.1.md)).
+
+- **Follows the spec.** Every example in the official
+  [syntax guide](https://xit.jotaen.net/syntax-guide) is a test.
+- **Writes back exactly what it read.** `stringify(parse(text)) === text`,
+  invalid lines and odd spacing included, so an app can tick one box and save
+  without touching anything else.
+- **Never writes something that reads back differently.** `stringify` throws
+  rather than produce a document that parses into something else.
+- **Runs anywhere.** ESM only, with no dependencies and no Node or DOM APIs,
+  so it works in Node, browsers and bundlers. `sideEffects: false`.
+- **Plain data.** Documents are plain objects, so they work with
+  `structuredClone`, `postMessage` and immutable updates.
+
+```ts
+import { parse, stringify, getGroups, updateItem } from 'xitjs';
+
+const doc = parse(`Groceries
+[ ] Milk #shop
+[x] ! Eggs -> 2026-11-04
+[@] Bread #shop=bakery
+    (the sourdough one)
+`);
+
+for (const { title, items } of getGroups(doc)) {
+  console.log(title, items.map((i) => [i.status, i.priority, i.description, i.dueDate?.date]));
+}
+// Groceries [
+//   ['open', 0, 'Milk #shop', undefined],
+//   ['checked', 1, 'Eggs -> 2026-11-04', '2026-11-04'],
+//   ['ongoing', 0, 'Bread #shop=bakery\n(the sourdough one)', undefined],
+// ]
+
+// Tick off the milk; every other line is written back unchanged.
+const blocks = doc.blocks.map((b) =>
+  b.type === 'item' && b.description.startsWith('Milk') ? updateItem(b, { status: 'checked' }) : b);
+stringify({ ...doc, blocks });
+```
+
+## The document
+
+```ts
+interface XitDocument {
+  blocks: Block[];          // one per line, but an item includes its continuation lines
+  newline?: '\n' | '\r\n';  // set by parse; default '\n'
+  finalNewline?: boolean;   // set by parse; default true
+  bom?: boolean;            // set by parse; default false
+}
+type Block = Title | Item | BlankLine | InvalidLine;
+
+interface Title       { type: 'title'; text: string }
+interface BlankLine   { type: 'blank'; raw?: string }   // raw: its whitespace, if any
+interface InvalidLine { type: 'invalid'; raw: string }  // kept, and written back unchanged
+
+interface Item {
+  type: 'item';
+  status: 'open' | 'checked' | 'ongoing' | 'obsolete' | 'in-question';
+  priority: number;              // the number of '!'s; 0 for none
+  description: string;           // continuation lines joined by '\n', without their indent
+  readonly tags: readonly Tag[]; // worked out from the description
+  readonly dueDate: DueDate | null;
+  raw?: string;                  // the source, so formatting like '..!' is kept
+}
+
+interface Tag { name: string; value: string | null }
+
+type DueDate = {
+  text: string;   // as written, e.g. '2022/W01'
+  date: string;   // the last day of the period, 'YYYY-MM-DD' (sorts as a string)
+} & (
+  | { period: 'day'; year: number; month: number; day: number }
+  | { period: 'week'; year: number; week: number }       // ISO 8601 weeks
+  | { period: 'month'; year: number; month: number }
+  | { period: 'quarter'; year: number; quarter: number }
+  | { period: 'year'; year: number });
+```
+
+`stringify` writes an item from its `status`, `priority` and `description`.
+`tags` and `dueDate` are worked out from the description: `parse`,
+`createItem` and `updateItem` fill them in. If you change a description by
+spreading (`{ ...item, description }`), use `updateItem` instead, or the
+`tags` and `dueDate` in memory will be stale. What's written is right either
+way.
+
+An item's `raw` is used only while it still reads back as the item's status,
+priority and description. So an unchanged item keeps its exact formatting,
+and a changed one is written in the standard form.
+
+## API
+
+### Reading
+
+| | |
+|---|---|
+| `parse(source, { strict? })` | Parse a document. Never throws: invalid lines become `InvalidLine` blocks. With `strict: true` it throws a `XitParseError` (with `.diagnostics`) if there are any errors. |
+| `validate(source)` | `Diagnostic[]`: errors (invalid lines) and warnings (valid, but probably not meant). |
+| `getGroups(doc)` | `{ title: string \| null, items: Item[] }[]`. Blank and invalid lines end a group. The items are the document's own block objects. |
+| `getItems(doc)` | All items, in order. |
+| `getTag(item, name)`, `hasTag(item, name)`, `tagNamesEqual(a, b)` | Tag lookups. Names are case-insensitive. |
+| `parseDescription(text)` | `{ tags, dueDate, segments }`. `segments` splits the text into text, tag and due-date pieces, e.g. to render tags as chips. |
+| `parseDueDate(text)` | Parse `2022-03-31`, `2022/03`, `2022`, `2022-W09` or `2022-Q1`, or return `null`. |
+
+### Writing
+
+| | |
+|---|---|
+| `stringify(doc, { newline?, finalNewline? })` | Write a document. Throws a `XitStringifyError` (with `.blockIndex`) if it can't be written so it reads back the same. Examples: a title after a non-blank line, a blank continuation line, a title starting with `[`. |
+| `createItem('text' \| { status?, priority?, description? })` | A new item. |
+| `updateItem(item, changes)` | A copy with changes applied and derived fields worked out again. |
+| `createDocument([{ title?, items? }, ...])` | A document of groups, with blank lines between them. |
+
+### Diagnostics
+
+```ts
+interface Diagnostic {
+  severity: 'error' | 'warning';
+  code: DiagnosticCode;
+  message: string;
+  from: number; to: number;   // UTF-16 offsets into the source, as CodeMirror uses
+  line: number; column: number; // 1-based
+}
+```
+
+| Code | Severity | Example |
+|---|---|---|
+| `invalid-checkbox` | error | `[*] a`, `[X] a`, `[] a`, `[Todos]` |
+| `missing-space-after-checkbox` | error | `[ ]a` |
+| `bad-indentation` | error | a continuation line not indented by exactly 4 spaces; any other indented line |
+| `title-without-blank-line` | error | a title straight after an item, or after another title |
+| `misplaced-priority` | warning | `[ ]    ! a` (read as description) |
+| `malformed-priority` | warning | `[ ] .!. a` (read as description) |
+| `invalid-due-date` | warning | `-> 2022-13-01`, `-> 2022-01/31`, `-> 2022-01-31T10:00` |
+| `extra-due-date` | warning | the second of `-> 2022 -> 2023` |
+| `unclosed-tag-value` | warning | `#tag="no closing quote` |
+| `missing-final-newline` | warning | |
+| `mixed-newlines` | warning | `\n` and `\r\n` in one file (it's written with the first one) |
+
+## Where the spec leaves room: decisions
+
+| Question | Decision |
+|---|---|
+| What can come before `#` in a tag? | Anything but a letter, digit, `_` or `-`. `(#tag)` and `#a/#b` are tags; `page#anchor` and `C#7` aren't. |
+| Is a tab a blank character? | Yes. The spec's glossary says only Unicode Zs, but the syntax guide says "whitespace", and without tab a tab-only line wouldn't be blank. |
+| `[ ]    ! a`, `[ ] .!. a`, shaded "invalid" in the guide | Valid items whose description starts with that text, with a warning. That's what the spec's grammar says. |
+| A due date that doesn't exist (`2022-02-30`, `2021-W53`) | Not a due date, with a warning. |
+| An invalid line between items | Ends the group (the spec says a group's items are *consecutive*). |
+| Writing an item with no priority whose description starts like one (`! a`) | Written as `[ ] . ! a`: a lone dot is a priority of 0, so it reads back the same. |
+| Combining marks in tag names (`#täg`) | Not part of the name: the spec says letters (Unicode L), and a mark is category M. |
+| Year `0000` | Allowed (ISO 8601's proleptic Gregorian calendar). A week whose Sunday falls in the year 10000 is not. |
+
+## Development
+
+Node and pnpm are pinned in `mise.toml`.
+
+```sh
+mise exec -- pnpm install
+mise exec -- pnpm test        # node:test, running the TypeScript directly
+mise exec -- pnpm test:fuzz   # the property tests, 50 times over
+mise exec -- pnpm test:dist   # build, then check the built package
+mise exec -- pnpm typecheck
+```
+
+`test/fixtures/syntax-guide.json` is generated from the syntax guide's HTML
+by `scripts/guide_fixture.py`.
