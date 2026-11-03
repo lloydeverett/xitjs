@@ -269,8 +269,10 @@ mise exec -- pnpm demo        # a demo page: http://localhost:5173
 `src/`. It has a CodeMirror editor using `xitjs/codemirror` (with lint
 from `validate`), samples including every syntax-guide example, controls
 that edit the selected item with `updateItem`, `setTag`, `removeTag`,
-`setDueDate` and `createItem`, and what `parse`, `getGroups`, `validate`,
-`tokenize` and `stringify` make of the text.
+`setDueDate` and `createItem`, and what `parse` (optionally strict),
+`getGroups`, `validate`, `tokenize` and `stringify` (with its options) make
+of the text. A last panel tries `parseDescription` and `parseDueDate` on
+whatever you type.
 
 `test/fixtures/syntax-guide.json` is generated from the syntax guide's HTML
 by `scripts/guide_fixture.py`. It records how the guide's own highlighting

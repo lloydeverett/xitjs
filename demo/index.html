@@ -57,17 +57,24 @@
           </div>
           <p id="edit-message" class="message"></p>
         </div>
+
+        <div class="card">
+          <h2>Try a description or a due date <small>parseDescription, parseDueDate</small></h2>
+          <label class="row">
+            <input id="try-description" class="wide" value='Call #who="Mum &amp; Dad" -> 2026-W45 (#later)' />
+          </label>
+          <pre id="description-output"></pre>
+          <label class="row">
+            <input id="try-due" class="wide" value="2026-Q4" />
+          </label>
+          <pre id="due-output"></pre>
+        </div>
       </section>
 
       <section class="column">
         <div class="card outputs">
-          <nav id="tabs">
-            <button data-tab="document">parse</button>
-            <button data-tab="groups">getGroups</button>
-            <button data-tab="diagnostics">validate</button>
-            <button data-tab="tokens">tokenize</button>
-            <button data-tab="round-trip">stringify</button>
-          </nav>
+          <nav id="tabs"></nav>
+          <div id="options"></div>
           <div id="output"></div>
         </div>
       </section>

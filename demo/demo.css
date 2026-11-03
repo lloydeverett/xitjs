@@ -98,7 +98,10 @@ input[type='number'] { width: 4.5em; }
 header select { max-width: min(60vw, 520px); }
 
 .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
-.row select#item { flex: 1; min-width: 0; }
+.row select#item, .row .wide { flex: 1; min-width: 0; }
+#options { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; color: var(--muted); }
+#options:empty { display: none; }
+#description-output, #due-output { margin-bottom: 10px; max-height: 260px; overflow: auto; }
 
 .message { min-height: 1.4em; margin: 4px 0 0; color: var(--muted); }
 .message.error { color: var(--bad); }
