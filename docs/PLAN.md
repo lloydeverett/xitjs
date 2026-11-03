@@ -14,6 +14,13 @@
 > - **Added `pnpm test:fuzz` and `pnpm test:dist`.**
 > - **Description editing helpers added since:** `setTag`, `removeTag` and
 >   `setDueDate` (`src/edit.ts`).
+> - **Tokenizer added since:** `tokenize`, `tokenizeLine` and
+>   `startLineState` (`src/tokenize.ts`), for editor highlighting. What
+>   each line is is now decided in one place, `readLine` (`src/lines.ts`),
+>   which both `parse` and the tokenizer use.
+> - **`xitjs/codemirror` added since:** the tokenizer as a CodeMirror
+>   `StreamLanguage`, with highlighting tags and a default style. Its
+>   CodeMirror packages are optional peer dependencies.
 
 A dependency-free TypeScript library that parses [x]it! documents
 (spec v1.1, `docs/xit-specification-1.1.md`) into plain data, and writes
@@ -190,8 +197,3 @@ all taken from the syntax guide): `malformed-priority` (`.!.`),
 - Scripts: `test`, `test:watch`, `typecheck`, `build`.
 - README with an API reference and the decisions table; AGENTS.md like
   graphite's.
-
-## Not in v1 (the design leaves room for them)
-
-- `tokenize(source)` returning offset tokens for editor highlighting, for
-  a CodeMirror `StreamLanguage`.

@@ -145,3 +145,58 @@ export interface Diagnostic {
   /** 1-based column of `from`, in UTF-16 code units. */
   column: number;
 }
+
+/**
+ * A piece of a document's syntax and where it is, from `tokenize` or
+ * `tokenizeLine`. Offsets are UTF-16, like `Diagnostic`'s. An item's tokens
+ * carry its status, so a theme can style a whole item by it (say, striking
+ * through a checked one).
+ */
+export type Token = TokenRange &
+  (
+    | { type: 'title' }
+    /** A blank line's whitespace (an empty line has no token). */
+    | { type: 'blank' }
+    /** A whole line that isn't valid, and why (the code of its `validate` error). */
+    | { type: 'invalid'; code: DiagnosticCode }
+    /** `[ ]`, `[x]` and so on. */
+    | { type: 'checkbox'; status: Status }
+    /** The priority marker, such as `!!` or `..!`. */
+    | { type: 'priority'; status: Status }
+    /** A continuation line's four spaces. */
+    | { type: 'indent'; status: Status }
+    /** Description text that isn't a tag or the due date. */
+    | { type: 'text'; status: Status }
+    | { type: 'tag'; status: Status; tag: Tag }
+    | { type: 'due-date'; status: Status; dueDate: DueDate }
+  );
+
+export type TokenType = Token['type'];
+
+export interface TokenRange {
+  /** Offset of the token's first character. */
+  from: number;
+  /** Offset just past its last character. */
+  to: number;
+}
+
+/**
+ * What `tokenizeLine` needs to know about the lines before a line. Treat it as
+ * opaque: it's plain frozen data, so it can be kept without copying, and
+ * compared by value. Every blank line leaves the same
+ * state as `startLineState()`, so tokenizing can restart at any blank line.
+ */
+export interface LineState {
+  /** The kind of the line before: `blank` at the start of a document too. */
+  readonly previous: 'blank' | 'title' | 'item' | 'invalid';
+  /**
+   * `open` while an indented line would continue an item's description;
+   * `bare` after an item with no description on its first line, which can't
+   * continue.
+   */
+  readonly item: 'none' | 'open' | 'bare';
+  /** The open item's status. */
+  readonly status: Status | null;
+  /** Whether the open item already has its due date. */
+  readonly hasDueDate: boolean;
+}

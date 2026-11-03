@@ -14,7 +14,14 @@
      "priority": 0,
      "text": "Open",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -22,7 +29,14 @@
      "priority": 0,
      "text": "Checked",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[x]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -30,7 +44,14 @@
      "priority": 0,
      "text": "Ongoing",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[@]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -38,7 +59,14 @@
      "priority": 0,
      "text": "Obsolete",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[~]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -46,7 +74,14 @@
      "priority": 0,
      "text": "In Question",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[?]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -112,7 +147,14 @@
      "priority": 0,
      "text": "Do this",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -127,7 +169,14 @@
      "priority": 0,
      "text": "  Do this",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -142,7 +191,14 @@
      "priority": 0,
      "text": "",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -150,7 +206,14 @@
      "priority": 0,
      "text": "",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -158,7 +221,14 @@
      "priority": 0,
      "text": "      ",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -198,14 +268,22 @@
      "priority": 0,
      "text": "This is a longer ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "description text",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     },
     {
      "kind": "item",
@@ -213,21 +291,30 @@
      "priority": 0,
      "text": "And this one ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "is even ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "longer",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     }
    ]
   },
@@ -242,21 +329,30 @@
      "priority": 0,
      "text": "These lines ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[x]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "checked",
      "text": "should all ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     },
     {
      "kind": "continuation",
      "status": "checked",
      "text": "look the same",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     }
    ]
   },
@@ -271,14 +367,22 @@
      "priority": 0,
      "text": "This has some ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "   more spaces",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     },
     {
      "kind": "item",
@@ -286,14 +390,22 @@
      "priority": 0,
      "text": "And this one ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "         as well",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     }
    ]
   },
@@ -308,7 +420,14 @@
      "priority": 0,
      "text": "The next line is ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "invalid"
@@ -319,7 +438,14 @@
      "priority": 0,
      "text": "The next line is ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "invalid"
@@ -330,7 +456,14 @@
      "priority": 0,
      "text": "The next line is ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "invalid"
@@ -341,7 +474,14 @@
      "priority": 0,
      "text": "The next line is ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "invalid"
@@ -352,7 +492,14 @@
      "priority": 0,
      "text": "The next line is ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "invalid"
@@ -363,7 +510,14 @@
      "priority": 0,
      "text": "The next line is ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "invalid"
@@ -381,7 +535,14 @@
      "priority": 0,
      "text": "A math formula: f[x]=x",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -389,7 +550,14 @@
      "priority": 0,
      "text": "[Description text]",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -397,7 +565,14 @@
      "priority": 0,
      "text": "[ ] Description text [ ]",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -405,14 +580,22 @@
      "priority": 0,
      "text": "The next line is ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "[ ] all description text",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     },
     {
      "kind": "item",
@@ -424,6 +607,28 @@
      ],
      "due": [
       "-> 2022"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!",
+       4
+      ],
+      [
+       "tag",
+       "#tags",
+       15
+      ],
+      [
+       "due",
+       "-> 2022",
+       27
+      ]
      ]
     },
     {
@@ -431,7 +636,8 @@
      "status": "open",
      "text": "(I.e., other tokens still work)",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     }
    ]
   },
@@ -446,7 +652,19 @@
      "priority": 1,
      "text": "This is important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -454,7 +672,19 @@
      "priority": 3,
      "text": "This is very important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!!!",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -462,7 +692,19 @@
      "priority": 10,
      "text": "This super important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!!!!!!!!!!",
+       4
+      ]
+     ]
     }
    ]
   },
@@ -477,7 +719,19 @@
      "priority": 1,
      "text": "This is important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "..!",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -485,7 +739,19 @@
      "priority": 2,
      "text": "This is more important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!!.",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -493,7 +759,19 @@
      "priority": 0,
      "text": "This is not important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "...",
+       4
+      ]
+     ]
     }
    ]
   },
@@ -508,7 +786,19 @@
      "priority": 1,
      "text": "  Do something",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -516,7 +806,19 @@
      "priority": 0,
      "text": "  Do something",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       ".",
+       4
+      ]
+     ]
     }
    ]
   },
@@ -557,7 +859,14 @@
      "priority": 0,
      "text": "!This has regular priority",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -565,7 +874,14 @@
      "priority": 0,
      "text": ".The dot is not priority",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -580,7 +896,19 @@
      "priority": 1,
      "text": "!!! This is important!",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -588,7 +916,19 @@
      "priority": 2,
      "text": "! ! This ! is also important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!!",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -596,7 +936,19 @@
      "priority": 1,
      "text": "... This . is also important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       "!.",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -604,7 +956,19 @@
      "priority": 0,
      "text": "! This is not important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "priority",
+       ".",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -612,14 +976,22 @@
      "priority": 0,
      "text": "The next line is also ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "!!! not important",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     }
    ]
   },
@@ -636,6 +1008,18 @@
      "tags": [],
      "due": [
       "-> 2022-01-31"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-01-31",
+       4
+      ]
      ]
     },
     {
@@ -646,6 +1030,18 @@
      "tags": [],
      "due": [
       "-> 2022-01-31"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-01-31",
+       12
+      ]
      ]
     },
     {
@@ -656,6 +1052,18 @@
      "tags": [],
      "due": [
       "-> 2022-01-31"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-01-31",
+       4
+      ]
      ]
     },
     {
@@ -664,7 +1072,14 @@
      "priority": 0,
      "text": "Do something until ...",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
@@ -673,6 +1088,13 @@
      "tags": [],
      "due": [
       "-> 2022-01-31"
+     ],
+     "spans": [
+      [
+       "due",
+       "-> 2022-01-31",
+       4
+      ]
      ]
     }
    ]
@@ -690,6 +1112,18 @@
      "tags": [],
      "due": [
       "-> 2022-01-31"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-01-31",
+       4
+      ]
      ]
     },
     {
@@ -700,6 +1134,18 @@
      "tags": [],
      "due": [
       "-> 2022-01"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-01",
+       4
+      ]
      ]
     },
     {
@@ -710,6 +1156,18 @@
      "tags": [],
      "due": [
       "-> 2022"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022",
+       4
+      ]
      ]
     },
     {
@@ -720,6 +1178,18 @@
      "tags": [],
      "due": [
       "-> 2022-W01"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-W01",
+       4
+      ]
      ]
     },
     {
@@ -730,6 +1200,18 @@
      "tags": [],
      "due": [
       "-> 2022-Q1"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-Q1",
+       4
+      ]
      ]
     }
    ]
@@ -747,6 +1229,18 @@
      "tags": [],
      "due": [
       "-> 2022/01/31"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022/01/31",
+       4
+      ]
      ]
     },
     {
@@ -757,6 +1251,18 @@
      "tags": [],
      "due": [
       "-> 2022/W01"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022/W01",
+       4
+      ]
      ]
     }
    ]
@@ -772,7 +1278,14 @@
      "priority": 0,
      "text": "-> 2022-01/31",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -789,6 +1302,18 @@
      "tags": [],
      "due": [
       "-> 2022-01-31"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-01-31",
+       4
+      ]
      ]
     }
    ]
@@ -806,6 +1331,18 @@
      "tags": [],
      "due": [
       "-> 2022-01-31"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-01-31",
+       17
+      ]
      ]
     },
     {
@@ -816,6 +1353,18 @@
      "tags": [],
      "due": [
       "-> 2022-01-31"
+     ],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "due",
+       "-> 2022-01-31",
+       13
+      ]
      ]
     }
    ]
@@ -831,7 +1380,14 @@
      "priority": 0,
      "text": "---> 2022-01-31",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -839,7 +1395,14 @@
      "priority": 0,
      "text": "Due-> 2022-01-31",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -847,7 +1410,14 @@
      "priority": 0,
      "text": "-> 2022-01-31very urgent",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -855,7 +1425,14 @@
      "priority": 0,
      "text": "-> 2022-01-31T10:00",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -863,7 +1440,14 @@
      "priority": 0,
      "text": "-> 2022-01-31-0",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -871,7 +1455,14 @@
      "priority": 0,
      "text": "-> 2022/01/31/0",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -886,7 +1477,14 @@
      "priority": 0,
      "text": "->2022-01-31",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -894,7 +1492,14 @@
      "priority": 0,
      "text": "→ 2022-01-31",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -902,7 +1507,14 @@
      "priority": 0,
      "text": "->   2022-01-31",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -910,7 +1522,14 @@
      "priority": 0,
      "text": ">2022-01-31",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -918,14 +1537,22 @@
      "priority": 0,
      "text": "Do until ->",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "2022-01-31",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     }
    ]
   },
@@ -942,7 +1569,19 @@
      "tags": [
       "#tag"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -952,7 +1591,19 @@
      "tags": [
       "#T-A-G"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#T-A-G",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -962,7 +1613,19 @@
      "tags": [
       "#--tag--"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#--tag--",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -972,7 +1635,19 @@
      "tags": [
       "#__tag__"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#__tag__",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -982,7 +1657,19 @@
      "tags": [
       "#t_a_g"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#t_a_g",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -992,7 +1679,19 @@
      "tags": [
       "#123"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#123",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1002,7 +1701,19 @@
      "tags": [
       "#___"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#___",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1012,7 +1723,19 @@
      "tags": [
       "#---"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#---",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1022,7 +1745,19 @@
      "tags": [
       "#1t2a3g"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#1t2a3g",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1032,7 +1767,19 @@
      "tags": [
       "#täg"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#täg",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1042,7 +1789,19 @@
      "tags": [
       "#今日は"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#今日は",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1052,7 +1811,19 @@
      "tags": [
       "#გამარჯობა"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#გამარჯობა",
+       4
+      ]
+     ]
     }
    ]
   },
@@ -1070,7 +1841,24 @@
       "#text",
       "#tags"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#text",
+       9
+      ],
+      [
+       "tag",
+       "#tags",
+       24
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1082,7 +1870,29 @@
       "#has",
       "#LOT"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#Actually",
+       4
+      ],
+      [
+       "tag",
+       "#has",
+       18
+      ],
+      [
+       "tag",
+       "#LOT",
+       25
+      ]
+     ]
     },
     {
      "kind": "continuation",
@@ -1091,7 +1901,14 @@
      "tags": [
       "#next-line"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "tag",
+       "#next-line",
+       16
+      ]
+     ]
     }
    ]
   },
@@ -1108,7 +1925,19 @@
      "tags": [
       "#tag"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag",
+       14
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1119,7 +1948,24 @@
       "#tag1",
       "#tag2"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag1",
+       10
+      ],
+      [
+       "tag",
+       "#tag2",
+       16
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1129,7 +1975,19 @@
      "tags": [
       "#t-a-g"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#t-a-g",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1139,7 +1997,19 @@
      "tags": [
       "#--tag--"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#--tag--",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1149,7 +2019,19 @@
      "tags": [
       "#--tag--"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#--tag--",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1159,7 +2041,19 @@
      "tags": [
       "#tag"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag",
+       5
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1169,7 +2063,19 @@
      "tags": [
       "#tag"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag",
+       4
+      ]
+     ]
     }
    ]
   },
@@ -1184,7 +2090,14 @@
      "priority": 0,
      "text": "Not a tag: #",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1192,7 +2105,14 @@
      "priority": 0,
      "text": "Not a tag: #=value",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1200,7 +2120,14 @@
      "priority": 0,
      "text": "Not a tag: #=\"value\"",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -1217,7 +2144,19 @@
      "tags": [
       "#tag=value"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=value",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1227,7 +2166,19 @@
      "tags": [
       "#t-a-g=v-a-l-u-e"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#t-a-g=v-a-l-u-e",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1237,7 +2188,19 @@
      "tags": [
       "#国=日本"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#国=日本",
+       4
+      ]
+     ]
     }
    ]
   },
@@ -1254,7 +2217,19 @@
      "tags": [
       "#tag="
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1264,7 +2239,19 @@
      "tags": [
       "#tag=\"\""
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=\"\"",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1274,7 +2261,19 @@
      "tags": [
       "#tag=''"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=''",
+       4
+      ]
+     ]
     }
    ]
   },
@@ -1293,7 +2292,29 @@
       "#tag2",
       "#tag3"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag1",
+       4
+      ],
+      [
+       "tag",
+       "#tag2",
+       10
+      ],
+      [
+       "tag",
+       "#tag3",
+       20
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1305,7 +2326,29 @@
       "#tag2='value'",
       "#tag3='value'"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag1='value'",
+       4
+      ],
+      [
+       "tag",
+       "#tag2='value'",
+       18
+      ],
+      [
+       "tag",
+       "#tag3='value'",
+       36
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1317,7 +2360,29 @@
       "#tag2=\"value\"",
       "#tag3=\"value\""
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag1=\"value\"",
+       4
+      ],
+      [
+       "tag",
+       "#tag2=\"value\"",
+       18
+      ],
+      [
+       "tag",
+       "#tag3=\"value\"",
+       36
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1329,7 +2394,29 @@
       "#tag2='value'",
       "#tag3=\"value\""
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag1",
+       4
+      ],
+      [
+       "tag",
+       "#tag2='value'",
+       10
+      ],
+      [
+       "tag",
+       "#tag3=\"value\"",
+       28
+      ]
+     ]
     }
    ]
   },
@@ -1346,7 +2433,19 @@
      "tags": [
       "#tag=\"v a l u e\""
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=\"v a l u e\"",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1356,7 +2455,19 @@
      "tags": [
       "#tag='v!a.l?u+e'"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag='v!a.l?u+e'",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1366,7 +2477,19 @@
      "tags": [
       "#tag='foo'"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag='foo'",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1376,7 +2499,19 @@
      "tags": [
       "#tag='foo'"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag='foo'",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1386,7 +2521,19 @@
      "tags": [
       "#tag='foo'"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag='foo'",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1396,7 +2543,19 @@
      "tags": [
       "#tag=\"bar\""
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=\"bar\"",
+       5
+      ]
+     ]
     }
    ]
   },
@@ -1413,7 +2572,19 @@
      "tags": [
       "#tag='It\\'"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag='It\\'",
+       4
+      ]
+     ]
     }
    ]
   },
@@ -1430,7 +2601,19 @@
      "tags": [
       "#tag="
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1440,7 +2623,19 @@
      "tags": [
       "#tag="
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=",
+       4
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1450,14 +2645,27 @@
      "tags": [
       "#tag="
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#tag=",
+       4
+      ]
+     ]
     },
     {
      "kind": "continuation",
      "status": "open",
      "text": "World!\"",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": []
     }
    ]
   },
@@ -1472,7 +2680,14 @@
      "priority": 0,
      "text": "Item 1 of group",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1480,7 +2695,14 @@
      "priority": 0,
      "text": "Item 2 of group",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "blank"
@@ -1491,7 +2713,14 @@
      "priority": 0,
      "text": "Item of another group",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -1506,7 +2735,14 @@
      "priority": 0,
      "text": "Item",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "blank"
@@ -1517,7 +2753,14 @@
      "priority": 0,
      "text": "Item",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "blank"
@@ -1528,7 +2771,14 @@
      "priority": 0,
      "text": "Item",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -1543,7 +2793,14 @@
      "priority": 0,
      "text": "Descrip-",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "blank"
@@ -1568,7 +2825,14 @@
      "priority": 0,
      "text": "Item 1",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1576,7 +2840,14 @@
      "priority": 0,
      "text": "Item 2",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -1605,7 +2876,14 @@
      "priority": 0,
      "text": "Do this",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "blank"
@@ -1619,7 +2897,14 @@
      "priority": 0,
      "text": "Do this",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "blank"
@@ -1633,7 +2918,14 @@
      "priority": 0,
      "text": "Do this",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -1648,7 +2940,14 @@
      "priority": 0,
      "text": "Do this",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "invalid"
@@ -1659,7 +2958,14 @@
      "priority": 0,
      "text": "Do this",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     }
    ]
   },
@@ -1678,7 +2984,14 @@
      "priority": 0,
      "text": "小包を受け取る",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1686,7 +2999,14 @@
      "priority": 0,
      "text": "夕食を作る",
      "tags": [],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[x]",
+       0
+      ]
+     ]
     },
     {
      "kind": "blank"
@@ -1703,7 +3023,19 @@
      "tags": [
       "#σκληρά"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#σκληρά",
+       15
+      ]
+     ]
     },
     {
      "kind": "item",
@@ -1713,7 +3045,19 @@
      "tags": [
       "#ήλιο"
      ],
-     "due": []
+     "due": [],
+     "spans": [
+      [
+       "checkbox",
+       "[ ]",
+       0
+      ],
+      [
+       "tag",
+       "#ήλιο",
+       18
+      ]
+     ]
     }
    ]
   }

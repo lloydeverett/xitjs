@@ -1,10 +1,8 @@
-import { charAt, isBlankChar, isBlankLine } from './chars.ts';
 import { scanDescription } from './description.ts';
 import { XitParseError } from './errors.ts';
-import {
-  CHECKBOX, CHECKBOX_ANYHOW, CHECKBOX_WIDTH, INDENT, PRIORITY, SPACES_THEN_PRIORITY, STATUS_BY_CHAR, makeItem,
-} from './item.ts';
-import type { Block, Diagnostic, DiagnosticCode, Newline, Status, XitDocument } from './types.ts';
+import { INDENT, SPACES_THEN_PRIORITY, makeItem } from './item.ts';
+import { START, readLine, splitLines, type Line } from './lines.ts';
+import type { Block, Diagnostic, DiagnosticCode, Status, XitDocument } from './types.ts';
 
 export interface ParseOptions {
   /** Throw a `XitParseError` if the source has any errors, rather than keeping them as invalid lines. */
@@ -48,19 +46,13 @@ const MESSAGES: Record<DiagnosticCode, string> = {
   'mixed-newlines': "The file mixes \\n and \\r\\n line endings; it will be written with the first one it uses.",
 };
 
-interface Line {
-  text: string;
-  /** Offset of the line's first character in the source. */
-  start: number;
-}
-
 interface PendingItem {
   status: Status;
   priority: number;
   /** Whether the first line has a priority marker (which may be only dots, so priority 0). */
   hasMarker: boolean;
   /** The description's lines, and where each starts in the source. */
-  parts: Array<{ text: string; start: number }>;
+  parts: Line[];
   rawLines: string[];
 }
 
@@ -79,63 +71,46 @@ function parseWithDiagnostics(source: string): { document: XitDocument; diagnost
 
   const blocks: Block[] = [];
   let pending: PendingItem | null = null;
-  let previous: 'start' | 'blank' | 'title' | 'item' | 'invalid' = 'start';
-  // Set after an item with no description on its first line, and the
-  // indented lines after it: none of them can continue it.
-  let afterBareItem = false;
+  let state = START;
 
   const flush = () => {
     if (!pending) return;
     blocks.push(finishItem(pending, report));
     pending = null;
   };
-  const invalid = (line: Line, code: DiagnosticCode, message?: string) => {
-    flush();
-    blocks.push({ type: 'invalid', raw: line.text });
-    report('error', code, line.start, line.start + line.text.length, message);
-    previous = 'invalid';
-  };
 
-  for (const line of lines) {
-    const { text } = line;
-    const bare = afterBareItem;
-    afterBareItem = false;
-    if (isBlankLine(text)) {
-      flush();
-      blocks.push({ type: 'blank', raw: text });
-      previous = 'blank';
-    } else if (text.startsWith('[')) {
-      const match = CHECKBOX.exec(text);
-      if (!match) {
-        invalid(line, CHECKBOX_ANYHOW.test(text) ? 'missing-space-after-checkbox' : 'invalid-checkbox');
-        continue;
+  for (const { text, start } of lines) {
+    const { line, state: next } = readLine(text, state);
+    state = next;
+    if (line.kind === 'continuation') {
+      // readLine only finds a continuation line while an item is open.
+      pending!.parts.push({ text: text.slice(INDENT.length), start: start + INDENT.length });
+      pending!.rawLines.push(text);
+      continue;
+    }
+    flush();
+    switch (line.kind) {
+      case 'blank':
+        blocks.push({ type: 'blank', raw: text });
+        break;
+      case 'title':
+        blocks.push({ type: 'title', text });
+        break;
+      case 'invalid':
+        blocks.push({ type: 'invalid', raw: text });
+        report('error', line.code, start, start + text.length, line.message);
+        break;
+      case 'item': {
+        const { marker } = line;
+        pending = {
+          status: line.status,
+          priority: marker === null ? 0 : [...marker].filter((c) => c === '!').length,
+          hasMarker: marker !== null,
+          parts: [{ text: text.slice(line.description), start: start + line.description }],
+          rawLines: [text],
+        };
+        break;
       }
-      flush();
-      // CHECKBOX is built from STATUS_CHARS, so its character always has a status.
-      pending = startItem(line, STATUS_BY_CHAR[match[1]!]!);
-      previous = 'item';
-      if (isBlankLine(pending.parts[0]!.text)) {
-        flush();
-        afterBareItem = true;
-      }
-    } else if (bare && text.startsWith(INDENT)) {
-      invalid(line, 'description-not-on-first-line');
-      afterBareItem = true;
-    } else if (pending && text.startsWith(INDENT)) {
-      pending.parts.push({ text: text.slice(INDENT.length), start: line.start + INDENT.length });
-      pending.rawLines.push(text);
-    } else if (isBlankChar(charAt(text, 0))) {
-      invalid(line, 'bad-indentation', previous === 'item'
-        ? 'A continuation line must be indented by exactly four spaces.'
-        : undefined);
-    } else if (previous === 'start' || previous === 'blank') {
-      flush();
-      blocks.push({ type: 'title', text });
-      previous = 'title';
-    } else {
-      invalid(line, 'title-without-blank-line', previous === 'title'
-        ? 'A group has at most one title: a title must be the first line, or come after a blank line.'
-        : undefined);
     }
   }
   flush();
@@ -145,24 +120,6 @@ function parseWithDiagnostics(source: string): { document: XitDocument; diagnost
 
   diagnostics.sort((a, b) => a.from - b.from);
   return { document: { blocks, newline, finalNewline, bom }, diagnostics };
-}
-
-function startItem(line: Line, status: Status): PendingItem {
-  // After the checkbox there's nothing, or one space and then the rest.
-  const rest = line.text.slice(CHECKBOX_WIDTH + 1);
-  const restStart = line.start + CHECKBOX_WIDTH + 1;
-  const marker = PRIORITY.exec(rest)?.[0];
-  if (marker === undefined) {
-    return { status, priority: 0, hasMarker: false, parts: [{ text: rest, start: restStart }], rawLines: [line.text] };
-  }
-  const skip = Math.min(marker.length + 1, rest.length);
-  return {
-    status,
-    priority: [...marker].filter((c) => c === '!').length,
-    hasMarker: true,
-    parts: [{ text: rest.slice(skip), start: restStart + skip }],
-    rawLines: [line.text],
-  };
 }
 
 const DOTS_AND_BANGS = /^[.!]*(?:\.!|!\.)[.!]*(?= |$)/;
@@ -198,24 +155,6 @@ function finishItem(
     report('warning', problem.code, toSource(problem.from), toSource(problem.to));
   }
   return makeItem(pending.status, pending.priority, description, pending.rawLines.join('\n'));
-}
-
-function splitLines(source: string, offset: number) {
-  const lines: Line[] = [];
-  let newline: Newline | null = null;
-  let mixedAt: number | null = null;
-  const pattern = /\r?\n/g;
-  let start = offset;
-  for (let match = pattern.exec(source); match; match = pattern.exec(source)) {
-    lines.push({ text: source.slice(start, match.index), start });
-    const found = match[0] as Newline;
-    if (newline === null) newline = found;
-    else if (found !== newline && mixedAt === null) mixedAt = match.index + found.length - 1;
-    start = match.index + found.length;
-  }
-  const finalNewline = start === source.length && lines.length > 0;
-  if (start < source.length) lines.push({ text: source.slice(start), start });
-  return { lines, newline: newline ?? '\n', finalNewline, mixedAt };
 }
 
 function lineIndexAt(lineStarts: number[], offset: number): number {

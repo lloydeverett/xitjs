@@ -53,14 +53,19 @@ def summarise(line):
     if outer == 'invalid': return {'kind': 'invalid'}, text
     if outer == 'headline': return {'kind': 'title', 'text': text}, text
     assert outer in STATUSES, outer
-    # Group consecutive runs of tag/due spans into tokens.
+    # Group consecutive runs of highlighted text into spans, with where each
+    # starts in the line (in UTF-16 code units, as JavaScript counts).
+    spans = []
     tokens = {'tag': [], 'due': []}
-    prev = None
+    prev = None; offset = 0
     for t, c in line:
-        k = 'tag' if 'tag' in c else 'due' if 'due' in c else None
-        if k and k == prev: tokens[k][-1] += t
-        elif k: tokens[k].append(t)
-        prev = k
+        k = next((k for k in ('checkbox', 'priority', 'tag', 'due') if k in c), None)
+        if k and k == prev: spans[-1][1] += t
+        elif k: spans.append([k, t, offset])
+        if k in tokens:
+            if k == prev: tokens[k][-1] += t
+            else: tokens[k].append(t)
+        prev = k; offset += len(t.encode('utf-16-le')) // 2
     has_box = bool(inner('checkbox'))
     rest = ''.join(t for t, c in line if 'checkbox' not in c and 'priority' not in c)
     entry = {'kind': 'item' if has_box else 'continuation', 'status': outer}
@@ -73,7 +78,7 @@ def summarise(line):
         entry['text'] = desc
     else:
         entry['text'] = rest[4:]
-    entry['tags'] = tokens['tag']; entry['due'] = tokens['due']
+    entry['tags'] = tokens['tag']; entry['due'] = tokens['due']; entry['spans'] = spans
     return entry, text
 
 p = P(); p.feed(open(sys.argv[1], encoding='utf-8').read())

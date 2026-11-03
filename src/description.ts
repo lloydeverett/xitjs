@@ -19,11 +19,20 @@ export function parseDescription(description: string): ParsedDescription {
 const DATE_LIKE = /\d{4}(?:[-/](?:\d{2}(?:[-/]\d{2})?|W\d{2}|Q\d))?/y;
 const FOUR_DIGITS = /\d{4}/y;
 
-export function scanDescription(description: string): ParsedDescription & { problems: DescriptionProblem[] } {
+/**
+ * Scans a description, or one line of it (lines can be scanned one at a time:
+ * neither a tag nor a due date spans lines). `hasDueDate` says an earlier
+ * line already has the due date, so any here is an extra one.
+ */
+export function scanDescription(
+  description: string,
+  hasDueDate = false,
+): ParsedDescription & { problems: DescriptionProblem[] } {
   const tags: Tag[] = [];
   const segments: Segment[] = [];
   const problems: DescriptionProblem[] = [];
   let dueDate: DueDate | null = null;
+  let seenDueDate = hasDueDate;
   let textStart = 0;
   let i = 0;
 
@@ -44,9 +53,10 @@ export function scanDescription(description: string): ParsedDescription & { prob
       }
     } else if (char === '-' && description.startsWith('-> ', i) && isDueDateBoundary(charBefore(description, i))) {
       const due = scanDueDate(description, i + 3);
-      if (due && !dueDate) {
+      if (due && !seenDueDate) {
         flushText(i);
         dueDate = due.dueDate;
+        seenDueDate = true;
         segments.push({ type: 'due-date', text: description.slice(i, due.end), dueDate });
         i = textStart = due.end;
         continue;

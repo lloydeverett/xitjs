@@ -7,8 +7,11 @@ the spec, and `docs/PLAN.md` the original design.
 ## Tools
 
 Node and pnpm are pinned in `mise.toml` and aren't on the PATH otherwise;
-run pnpm as `mise exec -- pnpm <script>`. There are no runtime dependencies,
-and that should stay so. Dev dependencies must be widely used and well
+run pnpm as `mise exec -- pnpm <script>`. The main entry has no runtime
+dependencies, and that should stay so: only `src/codemirror.ts` (the
+`xitjs/codemirror` entry) imports anything, and only its optional peer
+dependencies, `@codemirror/language` and `@lezer/highlight`.
+`pnpm test:dist` checks this. Dev dependencies must be widely used and well
 trusted; ask before adding one. `pnpm-workspace.yaml` refuses releases under
 a week old.
 
@@ -23,7 +26,7 @@ pnpm test:dist
 ```
 
 Work test-first: write the test, see it fail, then make it pass. Run
-`pnpm test:fuzz` after changing the parser or `stringify`.
+`pnpm test:fuzz` after changing the parser, the tokenizer or `stringify`.
 
 ## Things to know
 
@@ -48,9 +51,14 @@ Work test-first: write the test, see it fail, then make it pass. Run
   pattern is built from `STATUS_CHARS`. `descriptionProblem` (`src/item.ts`)
   is the one place that says which descriptions can be written, and both
   `stringify` and the editing helpers use it.
+- `readLine` (`src/lines.ts`) is the one place that decides what a line
+  is, from the state the lines before it left. `parse` builds blocks from
+  it and `tokenizeLine` builds tokens; property tests in
+  `test/tokenize.test.ts` hold the two in agreement.
 - The one description scanner is `scanDescription` (`src/description.ts`):
-  tags, due dates and their warnings. `parse` maps its description offsets
-  back to source offsets.
+  tags, due dates and their warnings. `parse` scans a whole description and
+  maps its offsets back to the source; `tokenizeLine` scans one line at a
+  time, passing whether the item already has its due date.
 - `setTag`, `removeTag` and `setDueDate` (`src/edit.ts`) edit the
   description text. Each tries the tidiest change first and keeps it only
   if re-reading gives exactly the intended tags and due date; otherwise it

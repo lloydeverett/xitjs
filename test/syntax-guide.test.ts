@@ -3,14 +3,17 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { parse, parseDescription, validate, type Item, type XitDocument } from '../src/index.ts';
+import { parse, parseDescription, tokenize, validate, type Item, type XitDocument } from '../src/index.ts';
+
+/** A highlighted piece of a line: its kind, its text, and where it starts in the line. */
+type Span = [kind: 'checkbox' | 'priority' | 'tag' | 'due', text: string, from: number];
 
 type Line =
   | { kind: 'blank' }
   | { kind: 'invalid' }
   | { kind: 'title'; text: string }
-  | { kind: 'item'; status: string; priority: number; text: string; tags: string[]; due: string[] }
-  | { kind: 'continuation'; status: string; text: string; tags: string[]; due: string[] };
+  | { kind: 'item'; status: string; priority: number; text: string; tags: string[]; due: string[]; spans: Span[] }
+  | { kind: 'continuation'; status: string; text: string; tags: string[]; due: string[]; spans: Span[] };
 
 interface Listing {
   section: string;
@@ -33,24 +36,24 @@ const fixture = JSON.parse(
  */
 const DEVIATIONS: Record<string, { line: Line; warning: string }> = {
   '[ ]    ! Do something': {
-    line: { kind: 'item', status: 'open', priority: 0, text: '   ! Do something', tags: [], due: [] },
+    line: { kind: 'item', status: 'open', priority: 0, text: '   ! Do something', tags: [], due: [], spans: [['checkbox', '[ ]', 0]] },
     warning: 'misplaced-priority',
   },
   '[ ]    . Do something': {
-    line: { kind: 'item', status: 'open', priority: 0, text: '   . Do something', tags: [], due: [] },
+    line: { kind: 'item', status: 'open', priority: 0, text: '   . Do something', tags: [], due: [], spans: [['checkbox', '[ ]', 0]] },
     warning: 'misplaced-priority',
   },
   '[ ] .!. Invalid': {
-    line: { kind: 'item', status: 'open', priority: 0, text: '.!. Invalid', tags: [], due: [] },
+    line: { kind: 'item', status: 'open', priority: 0, text: '.!. Invalid', tags: [], due: [], spans: [['checkbox', '[ ]', 0]] },
     warning: 'malformed-priority',
   },
   '[ ] !.! Invalid': {
-    line: { kind: 'item', status: 'open', priority: 0, text: '!.! Invalid', tags: [], due: [] },
+    line: { kind: 'item', status: 'open', priority: 0, text: '!.! Invalid', tags: [], due: [], spans: [['checkbox', '[ ]', 0]] },
     warning: 'malformed-priority',
   },
 };
 
-/** Our document, line by line, in the fixture's terms. */
+/** Our document, line by line, in the fixture's terms (without spans: see `spans`). */
 function toLines(document: XitDocument): Line[] {
   const lines: Line[] = [];
   for (const block of document.blocks) {
@@ -75,7 +78,31 @@ function itemLines(item: Item): Line[] {
     i === 0
       ? { kind: 'item', status: item.status, priority: item.priority, text, tags: tags[i]!, due: due[i]! }
       : { kind: 'continuation', status: item.status, text, tags: tags[i]!, due: due[i]! },
-  );
+  ) as Line[];
+}
+
+const SPAN_KINDS = { checkbox: 'checkbox', priority: 'priority', tag: 'tag', 'due-date': 'due' } as const;
+
+/** Our tokens, line by line, in the fixture's terms: the highlighted spans. */
+function spans(source: string): Span[][] {
+  const tokens = tokenize(source);
+  let start = 0;
+  return source.split('\n').map((text) => {
+    const line: Span[] = [];
+    for (const token of tokens) {
+      if (token.from < start || token.to > start + text.length) continue;
+      const kind = SPAN_KINDS[token.type as keyof typeof SPAN_KINDS];
+      if (kind) line.push([kind, source.slice(token.from, token.to), token.from - start]);
+    }
+    start += text.length + 1;
+    return line;
+  });
+}
+
+function withoutSpans(line: Line): Line {
+  if (!('spans' in line)) return line;
+  const { spans: _, ...rest } = line;
+  return rest as Line;
 }
 
 describe('syntax guide', () => {
@@ -83,7 +110,11 @@ describe('syntax guide', () => {
     test(`${listing.section}: ${listing.annotation}`, () => {
       const sourceLines = listing.source.split('\n');
       const expected = listing.lines.map((line, i) => DEVIATIONS[sourceLines[i]!]?.line ?? line);
-      assert.deepEqual(toLines(parse(listing.source)), expected);
+      assert.deepEqual(toLines(parse(listing.source)), expected.map(withoutSpans));
+      assert.deepEqual(
+        spans(listing.source).slice(0, expected.length),
+        expected.map((line) => ('spans' in line ? line.spans : [])),
+      );
 
       const warnings = validate(listing.source).filter((d) => d.severity === 'warning').map((d) => d.code);
       for (const sourceLine of sourceLines) {

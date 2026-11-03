@@ -11,7 +11,10 @@ Parse and write [[x]it!](https://xit.jotaen.net/) todo documents
 - **Never writes something that reads back differently.** `stringify` throws
   rather than produce a document that parses into something else.
 - **Runs anywhere.** ESM only, with no dependencies and no Node or DOM APIs,
-  so it works in Node, browsers and bundlers. `sideEffects: false`.
+  so it works in Node, browsers and bundlers. `sideEffects: false`. (The
+  optional `xitjs/codemirror` entry needs CodeMirror, as peer dependencies.)
+- **Highlights in editors.** `tokenize` says where each piece of syntax is,
+  and `xitjs/codemirror` makes that a CodeMirror language.
 - **Plain data.** Documents are plain objects, so they work with
   `structuredClone`, `postMessage` and immutable updates.
 
@@ -138,6 +141,76 @@ item = setDueDate(item, '2026-W45');     // 'Call mum #who="Mum & Dad" -> 2026-W
 item = removeTag(item, 'who');           // 'Call mum -> 2026-W45'
 ```
 
+### Highlighting
+
+`tokenize` says where each piece of syntax is, for syntax highlighting.
+It reads a document exactly as `parse` does.
+
+```ts
+tokenize('[x] !! Call mum #family -> 2026-W45\n');
+// [{ type: 'checkbox', status: 'checked', from: 0, to: 3 },
+//  { type: 'priority', status: 'checked', from: 4, to: 6 },
+//  { type: 'text',     status: 'checked', from: 7, to: 16 },
+//  { type: 'tag',      status: 'checked', from: 16, to: 23, tag: { name: 'family', value: null } },
+//  { type: 'text',     status: 'checked', from: 23, to: 24 },
+//  { type: 'due-date', status: 'checked', from: 24, to: 35, dueDate: { ... } }]
+```
+
+| | |
+|---|---|
+| `tokenize(source)` | `Token[]`, in order, with UTF-16 offsets into `source`. Every character is in one token, except line endings, a byte-order mark, and the single space after a checkbox or priority. |
+| `tokenizeLine(text, state)` | `{ tokens, state }` for one line (without its line ending), with offsets into the line. Pass the state the line before returned, or `startLineState()` for the first line. |
+| `startLineState()` | The state for a document's first line. Every blank line leaves this same state, so tokenizing can restart at any blank line. |
+
+The token types are `title`, `blank` (a blank line's whitespace),
+`invalid` (a whole invalid line, with its diagnostic `code`), and, for
+items, `checkbox`, `priority`, `indent` (a continuation line's four
+spaces), `text`, `tag` (with its `tag`) and `due-date` (with its
+`dueDate`). An item's tokens all carry its `status`, so a theme can style
+a whole item by it.
+
+`tokenizeLine` is what an editor that highlights a line at a time needs,
+like CodeMirror's `StreamLanguage`. Lines depend on the ones before them
+(whether an indented line continues an item, say), and the state is all
+that's carried from one line to the next. It's small, plain and frozen.
+
+### CodeMirror
+
+`xitjs/codemirror` makes the tokenizer a CodeMirror 6 language. It needs
+`@codemirror/language` and `@lezer/highlight`, as peer dependencies; the
+main `xitjs` entry still needs nothing.
+
+```ts
+import { syntaxHighlighting } from '@codemirror/language';
+import { markdown } from '@codemirror/lang-markdown';
+import { linter } from '@codemirror/lint';
+import { validate } from 'xitjs';
+import { xit, xitHighlightStyle, xitLanguageDescription } from 'xitjs/codemirror';
+
+// A .xit file:
+const extensions = [
+  xit(),
+  syntaxHighlighting(xitHighlightStyle),
+  linter((view) => validate(view.state.doc.toString())), // diagnostics are already in its shape
+];
+
+// ```xit blocks in markdown:
+markdown({ codeLanguages: [xitLanguageDescription] });
+```
+
+| | |
+|---|---|
+| `xit()` | A `LanguageSupport` for an editor's extensions. |
+| `xitLanguage` | The `StreamLanguage` itself. It re-reads from the nearest saved line state after an edit, like any stream language. |
+| `xitLanguageDescription` | For markdown's `codeLanguages`: matches `xit` code blocks. |
+| `xitTags` | The highlighting tags: `title`, `checkbox`, `priority`, `tag`, `dueDate` and `invalid`, and one per status (`open`, `checked`, `ongoing`, `obsolete`, `inQuestion`), which every token of an item also gets. |
+| `xitHighlightStyle` | A default style with no colours: bold titles and priorities, faded checked and obsolete items (obsolete ones struck through), and invalid lines underlined. |
+
+Each of `xitTags` derives from a standard tag (`heading`, `atom`,
+`keyword`, `labelName`, `literal` and `invalid`), so an existing theme
+colours xit without knowing about it. To style xit specifically, add a
+`HighlightStyle` for `xitTags`.
+
 ### Diagnostics
 
 ```ts
@@ -191,4 +264,7 @@ mise exec -- pnpm typecheck
 ```
 
 `test/fixtures/syntax-guide.json` is generated from the syntax guide's HTML
-by `scripts/guide_fixture.py`.
+by `scripts/guide_fixture.py`. It records how the guide's own highlighting
+reads each example line: its kind, status, priority, description, tags and
+due date, and where its checkbox, priority, tags and due date are. The
+parser and the tokenizer are both tested against it.

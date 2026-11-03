@@ -3,6 +3,7 @@ import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import fc from 'fast-check';
+import { anyDocument, anything, document, line, runs, xitDocument } from './arbitraries.ts';
 import {
   XitStringifyError, parse, stringify, updateItem, type Block, type Item,
 } from '../src/index.ts';
@@ -136,31 +137,6 @@ describe('round trip: editing', () => {
 // Property tests -------------------------------------------------------------
 // `pnpm test:fuzz` runs them many more times (XIT_FUZZ multiplies the runs).
 
-const runs = (n: number) => ({ numRuns: n * Number(process.env.XIT_FUZZ ?? 1) });
-
-/** Pieces of [x]it! syntax, plus whitespace and other characters that matter to it. */
-const fragment = fc.constantFrom(
-  '[ ]', '[x]', '[@]', '[~]', '[?]', '[', ']', '[X]', '[]', ' ', '    ', '\t', '\u00a0', '\r',
-  '!', '!!', '.', '..', '#', '#tag', '=', '"', "'", '->', '-> ', '2022', '-01', '/01', '-31', '-W01', '-Q2', 'W', 'Q',
-  '-', '/', '(', ')', 'a', 'Title', 'é', '今', '🥳', '̈', '\uFEFF',
-);
-/** A line: any mix of fragments, but no line ending (and none hiding at its end). */
-const line = fc.array(fragment, { maxLength: 12 }).map((parts) => parts.join('')).filter((l) => !l.endsWith('\r'));
-const document = fc.record({
-  lines: fc.array(line, { maxLength: 15 }),
-  newline: fc.constantFrom('\n', '\r\n'),
-  finalNewline: fc.boolean(),
-  bom: fc.boolean(),
-}).map(({ lines, newline, finalNewline, bom }) =>
-  (bom ? '\uFEFF' : '') + lines.join(newline) + (finalNewline && lines.length > 0 ? newline : ''));
-
-/** Any text at all, including lone surrogates, as lines joined by \n. */
-const anyLine = fc.string({ unit: 'binary', maxLength: 40 }).map((s) => s.replace(/[\r\n]/g, ''));
-const anyDocument = fc.array(anyLine, { maxLength: 10 }).map((lines) => lines.join('\n'));
-
-/** Anything, including mixed and stray line endings. */
-const anything = fc.string({ unit: fc.constantFrom('\n', '\r', '\r\n', ' ', '[ ]', '[x]', 'a', '!', '    ', '#t', '-> 2022'), maxLength: 30 });
-
 /** Blocks without their `raw` formatting. */
 const plain = (blocks: Block[]) => blocks.map((b) => {
   const { raw: _, ...rest } = b as Block & { raw?: string };
@@ -169,7 +145,7 @@ const plain = (blocks: Block[]) => blocks.map((b) => {
 
 describe('round trip: properties', () => {
   test('xit-like documents are written back exactly', () => {
-    fc.assert(fc.property(document, (source) => roundTrip(source) === source), runs(3000));
+    fc.assert(fc.property(fc.oneof(document, xitDocument), (source) => roundTrip(source) === source), runs(3000));
   });
 
   test('any text (with one kind of line ending) is written back exactly', () => {

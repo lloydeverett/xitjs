@@ -7,3 +7,4 @@ export { getGroups, getItems, getTag, hasTag, tagNamesEqual } from './query.ts';
 export { parseDescription } from './description.ts';
 export { parseDueDate } from './due-date.ts';
 export { XitEditError, XitParseError, XitStringifyError } from './errors.ts';
+export { tokenize, tokenizeLine, startLineState } from './tokenize.ts';
