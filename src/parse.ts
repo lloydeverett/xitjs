@@ -1,7 +1,9 @@
 import { charAt, isBlankChar, isBlankLine } from './chars.ts';
 import { scanDescription } from './description.ts';
 import { XitParseError } from './errors.ts';
-import { PRIORITY, STATUS_BY_CHAR, makeItem } from './item.ts';
+import {
+  CHECKBOX, CHECKBOX_ANYHOW, CHECKBOX_WIDTH, INDENT, PRIORITY, SPACES_THEN_PRIORITY, STATUS_BY_CHAR, makeItem,
+} from './item.ts';
 import type { Block, Diagnostic, DiagnosticCode, Newline, Status, XitDocument } from './types.ts';
 
 export interface ParseOptions {
@@ -27,15 +29,13 @@ export function validate(source: string): Diagnostic[] {
   return parseWithDiagnostics(source).diagnostics;
 }
 
-const CHECKBOX = /^\[([ x@~?])\](?: |$)/;
-const CHECKBOX_WITHOUT_SPACE = /^\[[ x@~?]\]/;
-const INDENT = '    ';
-
 const MESSAGES: Record<DiagnosticCode, string> = {
   'invalid-checkbox': "Not a valid checkbox: use [ ], [x], [@], [~] or [?]. (A title can't start with '['.)",
   'missing-space-after-checkbox': 'A checkbox must be followed by a space or the end of the line.',
   'bad-indentation': "Only an item's continuation lines can be indented, by exactly four spaces.",
   'title-without-blank-line': 'A title must be the first line, or come after a blank line.',
+  'description-not-on-first-line':
+    "A description must start on the item's first line, so an item without one can't continue onto the next.",
   'misplaced-priority':
     "This isn't a priority: a priority must follow the checkbox and exactly one space, so this is part of the description.",
   'malformed-priority':
@@ -80,6 +80,9 @@ function parseWithDiagnostics(source: string): { document: XitDocument; diagnost
   const blocks: Block[] = [];
   let pending: PendingItem | null = null;
   let previous: 'start' | 'blank' | 'title' | 'item' | 'invalid' = 'start';
+  // Set after an item with no description on its first line, and the
+  // indented lines after it: none of them can continue it.
+  let afterBareItem = false;
 
   const flush = () => {
     if (!pending) return;
@@ -95,6 +98,8 @@ function parseWithDiagnostics(source: string): { document: XitDocument; diagnost
 
   for (const line of lines) {
     const { text } = line;
+    const bare = afterBareItem;
+    afterBareItem = false;
     if (isBlankLine(text)) {
       flush();
       blocks.push({ type: 'blank', raw: text });
@@ -102,12 +107,20 @@ function parseWithDiagnostics(source: string): { document: XitDocument; diagnost
     } else if (text.startsWith('[')) {
       const match = CHECKBOX.exec(text);
       if (!match) {
-        invalid(line, CHECKBOX_WITHOUT_SPACE.test(text) ? 'missing-space-after-checkbox' : 'invalid-checkbox');
+        invalid(line, CHECKBOX_ANYHOW.test(text) ? 'missing-space-after-checkbox' : 'invalid-checkbox');
         continue;
       }
       flush();
+      // CHECKBOX is built from STATUS_CHARS, so its character always has a status.
       pending = startItem(line, STATUS_BY_CHAR[match[1]!]!);
       previous = 'item';
+      if (isBlankLine(pending.parts[0]!.text)) {
+        flush();
+        afterBareItem = true;
+      }
+    } else if (bare && text.startsWith(INDENT)) {
+      invalid(line, 'description-not-on-first-line');
+      afterBareItem = true;
     } else if (pending && text.startsWith(INDENT)) {
       pending.parts.push({ text: text.slice(INDENT.length), start: line.start + INDENT.length });
       pending.rawLines.push(text);
@@ -135,9 +148,9 @@ function parseWithDiagnostics(source: string): { document: XitDocument; diagnost
 }
 
 function startItem(line: Line, status: Status): PendingItem {
-  // After '[x]' there's nothing, or one space and then the rest.
-  const rest = line.text.slice(4);
-  const restStart = line.start + 4;
+  // After the checkbox there's nothing, or one space and then the rest.
+  const rest = line.text.slice(CHECKBOX_WIDTH + 1);
+  const restStart = line.start + CHECKBOX_WIDTH + 1;
   const marker = PRIORITY.exec(rest)?.[0];
   if (marker === undefined) {
     return { status, priority: 0, hasMarker: false, parts: [{ text: rest, start: restStart }], rawLines: [line.text] };
@@ -152,7 +165,6 @@ function startItem(line: Line, status: Status): PendingItem {
   };
 }
 
-const SPACES_THEN_PRIORITY = /^( +)((?:\.*!+|!+\.+|\.+))(?= |$)/;
 const DOTS_AND_BANGS = /^[.!]*(?:\.!|!\.)[.!]*(?= |$)/;
 
 function finishItem(

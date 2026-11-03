@@ -1,6 +1,6 @@
 import { charAt, isBlankChar, isBlankLine } from './chars.ts';
 import { XitStringifyError } from './errors.ts';
-import { PRIORITY, STATUS_CHARS } from './item.ts';
+import { INDENT, PRIORITY, STATUS_CHARS, descriptionProblem } from './item.ts';
 import { parse } from './parse.ts';
 import type { Block, Item, Newline, Title, XitDocument } from './types.ts';
 
@@ -10,8 +10,6 @@ export interface StringifyOptions {
   /** Overrides the document's `finalNewline`. */
   finalNewline?: boolean;
 }
-
-const INDENT = '    ';
 
 /**
  * Writes a document as [x]it! text. Throws a `XitStringifyError` rather than
@@ -99,8 +97,9 @@ function itemLines(item: Item, fail: (message: string) => never): string[] {
   if (box === undefined) fail(`Unknown status: ${JSON.stringify(status)}.`);
   if (!Number.isInteger(priority) || priority < 0) fail(`The priority must be a whole number, 0 or more, not ${priority}.`);
 
+  const problem = descriptionProblem(description);
+  if (problem) fail(problem);
   const [first = '', ...rest] = description.split('\n');
-  if (rest.some(isBlankLine)) fail("A description's continuation lines can't be blank: a blank line ends the item.");
 
   if (item.raw !== undefined && sameItem(item.raw, item)) return item.raw.split('\n');
 

@@ -156,6 +156,7 @@ interface Diagnostic {
 | `missing-space-after-checkbox` | error | `[ ]a` |
 | `bad-indentation` | error | a continuation line not indented by exactly 4 spaces; any other indented line |
 | `title-without-blank-line` | error | a title straight after an item, or after another title |
+| `description-not-on-first-line` | error | an indented line after an item with no description, like `[ ]` (a description must start on the item's own line) |
 | `misplaced-priority` | warning | `[ ]    ! a` (read as description) |
 | `malformed-priority` | warning | `[ ] .!. a` (read as description) |
 | `invalid-due-date` | warning | `-> 2022-13-01`, `-> 2022-01/31`, `-> 2022-01-31T10:00` |

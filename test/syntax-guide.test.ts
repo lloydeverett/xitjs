@@ -25,8 +25,11 @@ const fixture = JSON.parse(
 
 /**
  * Where we deliberately read a line differently from the guide's highlighting.
- * The guide shades these "invalid", but by the spec's grammar they are a
- * checkbox, one space, and a description; we keep them as items and warn.
+ * The guide shades these whole lines "invalid". The guide also says a priority
+ * can't have extra spaces to its left, and that dots can't surround or sit
+ * between its !s, so none of these is a priority. But each line is still a
+ * checkbox, one space and a description, which the spec allows, so we keep
+ * them as items with no priority and warn.
  */
 const DEVIATIONS: Record<string, { line: Line; warning: string }> = {
   '[ ]    ! Do something': {

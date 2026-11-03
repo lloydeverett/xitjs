@@ -22,8 +22,18 @@ export function isPunctuation(char: string): boolean {
   return PUNCTUATION.test(char);
 }
 
-/** Matches one or more tag name characters (letters, ASCII digits, `_`, `-`) at `lastIndex`. */
-export const TAG_NAME = /[\p{L}0-9_-]+/uy;
+/** A tag name character: a letter, an ASCII digit, `_` or `-`. */
+const TAG_NAME_CHAR = String.raw`[\p{L}0-9_-]`;
+
+/** Matches one or more tag name characters at `lastIndex`. */
+export const TAG_NAME = new RegExp(`${TAG_NAME_CHAR}+`, 'uy');
+
+const WHOLE_TAG_NAME = new RegExp(`^${TAG_NAME_CHAR}+$`, 'u');
+
+/** Whether the whole string is a valid tag name (or an unquoted tag value). */
+export function isTagName(text: string): boolean {
+  return WHOLE_TAG_NAME.test(text);
+}
 
 /** The whole code point that starts at `index`, or '' at the end. */
 export function charAt(text: string, index: number): string {

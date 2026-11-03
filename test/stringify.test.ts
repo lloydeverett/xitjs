@@ -45,7 +45,6 @@ describe('stringify: standard form', () => {
 
   test('continuation lines are indented by four spaces', () => {
     assert.equal(write(item({ description: 'One\ntwo\n  three' })), '[ ] One\n    two\n      three\n');
-    assert.equal(write(item({ description: '\nonly continued' })), '[ ]\n    only continued\n');
   });
 
   test('titles, blank lines and invalid lines', () => {
@@ -99,6 +98,12 @@ describe('stringify: raw', () => {
 });
 
 describe('stringify: refuses what would read back differently', () => {
+  test("a description whose first line is blank but which continues (it must start on the item's line)", () => {
+    throwsAt({ blocks: [item({ description: '\nonly continued' })] }, 0, /first line/);
+    throwsAt({ blocks: [item({ description: '   \nmore' })] }, 0, /first line/);
+    throwsAt({ blocks: [item({ priority: 1, description: '\nmore' })] }, 0, /first line/);
+  });
+
   test('a blank continuation line', () => {
     throwsAt({ blocks: [item({ description: 'a\n\nb' })] }, 0, /blank/);
     throwsAt({ blocks: [item({ description: 'a\n   ' })] }, 0, /blank/);

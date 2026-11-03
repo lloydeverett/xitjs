@@ -93,6 +93,15 @@ describe('removeTag', () => {
     assert.equal(removeTag(before, 'x'), before);
   });
 
+  test('a line left empty is removed, so the description can still be written', () => {
+    assert.equal(removeTag(item('a\n#t'), 't').description, 'a');
+    assert.equal(removeTag(item('a\n#t\nb'), 't').description, 'a\nb');
+    assert.equal(removeTag(item('#t\nb'), 't').description, 'b');
+    assert.equal(removeTag(item('a\n #t'), 't').description, 'a');
+    assert.equal(setDueDate(item('a\n-> 2022'), null).description, 'a');
+    assert.equal(setDueDate(item('-> 2022\nb'), null).description, 'b');
+  });
+
   test('never turns other text into a tag', () => {
     // Removing '#x' and its space only would leave 'a #b', making '#b' a tag.
     const edited = removeTag(item('a #x#b'), 'x');
@@ -152,6 +161,15 @@ describe('editing: properties', () => {
   const RUNS = 2000;
   /** Counts the runs that made an edit, so a property can't pass by refusing everything. */
   let edited = 0;
+  /** Whether stringify accepts the item; an edit must never make a writable item unwritable. */
+  const writable = (i: Item) => {
+    try {
+      stringify({ blocks: [i] });
+      return true;
+    } catch {
+      return false;
+    }
+  };
   const done = () => {
     assert.ok(edited > RUNS * 0.9, `only ${edited} of ${RUNS} runs made an edit`);
     edited = 0;
@@ -168,6 +186,7 @@ describe('editing: properties', () => {
         throw error;
       }
       edited++;
+      if (writable(before)) assert.ok(writable(after), JSON.stringify(after.description));
       assert.equal(getTag(after, n)?.value ?? null, v || null);
       assert.deepEqual(after.dueDate, before.dueDate);
       const others = (i: Item) => i.tags.filter((t) => t !== getTag(i, n));
@@ -187,6 +206,7 @@ describe('editing: properties', () => {
         throw error;
       }
       edited++;
+      if (writable(before)) assert.ok(writable(after), JSON.stringify(after.description));
       assert.equal(getTag(after, n), undefined);
       assert.deepEqual(after.dueDate, before.dueDate);
       assert.deepEqual(after.tags, before.tags.filter((t) => t.name.toLowerCase() !== n.toLowerCase()));
@@ -206,6 +226,7 @@ describe('editing: properties', () => {
         throw error;
       }
       edited++;
+      if (writable(before)) assert.ok(writable(after), JSON.stringify(after.description));
       assert.equal(after.dueDate?.text ?? null, d);
       assert.deepEqual(after.tags, before.tags);
     }), { numRuns: RUNS });

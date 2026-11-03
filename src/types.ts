@@ -122,6 +122,7 @@ export type DiagnosticCode =
   | 'missing-space-after-checkbox'
   | 'bad-indentation'
   | 'title-without-blank-line'
+  | 'description-not-on-first-line'
   // Warnings: valid, but probably not what was meant.
   | 'malformed-priority'
   | 'misplaced-priority'

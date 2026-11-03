@@ -42,8 +42,7 @@ export function tagNamesEqual(a: string, b: string): boolean {
 
 /** The item's first tag with this name (case-insensitive), or `undefined`. */
 export function getTag(item: Pick<Item, 'tags'>, name: string): Tag | undefined {
-  const folded = foldCase(name);
-  return item.tags.find((tag) => foldCase(tag.name) === folded);
+  return item.tags.find((tag) => tagNamesEqual(tag.name, name));
 }
 
 /** Whether the item has a tag with this name (case-insensitive). */

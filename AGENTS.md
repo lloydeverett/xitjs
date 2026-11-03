@@ -43,6 +43,11 @@ Work test-first: write the test, see it fail, then make it pass. Run
 - `stringify` writes an item's `raw` source only if re-parsing it gives the
   same status, priority and description. `tags` and `dueDate` are derived
   and never written.
+- The grammar's pieces (checkbox, priority marker, tag name, indent) are
+  each defined once, in `src/item.ts` and `src/chars.ts`. The checkbox
+  pattern is built from `STATUS_CHARS`. `descriptionProblem` (`src/item.ts`)
+  is the one place that says which descriptions can be written, and both
+  `stringify` and the editing helpers use it.
 - The one description scanner is `scanDescription` (`src/description.ts`):
   tags, due dates and their warnings. `parse` maps its description offsets
   back to source offsets.

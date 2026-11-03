@@ -85,6 +85,15 @@ describe('parse: blocks', () => {
     assert.deepEqual(kinds('[ ] a\nbad\n    more\n'), ['item', 'invalid', 'invalid']);
   });
 
+  test('a description must start on the first line: an item without one has no continuation lines', () => {
+    const doc = parse('[ ]\n    b\n    c\n[ ] !\n    d\n');
+    assert.deepEqual(doc.blocks.map((b) => (b.type === 'item' ? [b.priority, b.description] : b.type)), [
+      [0, ''], 'invalid', 'invalid', [1, ''], 'invalid',
+    ]);
+    assert.deepEqual(errorCodes('[ ]\n    b\n    c\n'), ['description-not-on-first-line', 'description-not-on-first-line']);
+    assert.deepEqual(kinds('[ ] a\n    b\n'), ['item']);
+  });
+
   test('invalid lines are kept as they were', () => {
     assert.deepEqual(parse('[*] Huh').blocks, [{ type: 'invalid', raw: '[*] Huh' }]);
   });
@@ -169,6 +178,9 @@ describe('validate', () => {
       ['[ ] a\n\n    b', 'bad-indentation'],
       ['[ ] a\nTodos', 'title-without-blank-line'],
       ['One\nTwo', 'title-without-blank-line'],
+      ['[ ]\n    b', 'description-not-on-first-line'],
+      ['[ ] !\n    b', 'description-not-on-first-line'],
+      ['[ ]   \n    b', 'description-not-on-first-line'],
     ];
     for (const [source, code] of cases) assert.deepEqual(errorCodes(source), [code], JSON.stringify(source));
   });

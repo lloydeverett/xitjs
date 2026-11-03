@@ -1,18 +1,22 @@
 // Editing an item's tags and due date by rewriting its description.
 //
 // Each edit tries the tidiest change first, re-reads the result, and keeps it
-// only if exactly the intended tags and due date come back. So an edit never
-// quietly changes anything else, such as text next to a tag turning into a tag.
+// only if exactly the intended tags and due date come back, and the item can
+// still be written (if it could before). So an edit never quietly changes
+// anything else, such as text next to a tag turning into a tag.
 
-import { isBlankChar } from './chars.ts';
+import { isBlankChar, isBlankLine, isTagName } from './chars.ts';
 import { updateItem } from './build.ts';
 import { parseDescription } from './description.ts';
 import { parseDueDate } from './due-date.ts';
 import { XitEditError } from './errors.ts';
+import { descriptionProblem } from './item.ts';
 import { tagNamesEqual } from './query.ts';
 import type { DueDate, Item, Segment, Tag } from './types.ts';
 
-const NAME = /^[\p{L}0-9_-]+$/u;
+/** A tag or due date in a description, and where it is. */
+type Span = Exclude<Segment, { type: 'text' }> & { from: number; to: number };
+type TagSpan = Extract<Span, { type: 'tag' }>;
 
 /**
  * Sets a tag on an item. If the item already has the tag (names are
@@ -25,45 +29,43 @@ const NAME = /^[\p{L}0-9_-]+$/u;
  * can't be written (it contains a newline, or both kinds of quote).
  */
 export function setTag(item: Item, name: string, value?: string | null): Item {
-  if (!NAME.test(name)) {
+  if (!isTagName(name)) {
     throw new XitEditError(`Not a valid tag name: ${JSON.stringify(name)}. A name can only contain letters, digits, _ and -.`);
   }
   const wanted = value || null;
-  const forms = valueForms(wanted);
-
+  const spellings = valueSpellings(wanted);
   const description = item.description;
-  const { tags, dueDate } = parseDescription(description);
-  const index = tags.findIndex((tag) => tagNamesEqual(tag.name, name));
-  const existing = index === -1 ? undefined : spans(description).filter((s) => s.type === 'tag')[index];
+  const check = checker(description);
+  const tagSpans = spansOf(description).filter((s): s is TagSpan => s.type === 'tag');
+  const tags = tagSpans.map((s) => s.tag);
+  const index = tagSpans.findIndex((s) => tagNamesEqual(s.tag.name, name));
+  const existing = tagSpans[index];
 
-  for (const form of forms) {
-    let edited: string;
-    let expected: Tag[];
-    if (existing) {
-      const spelling = tags[index]!.name;
-      edited = splice(description, existing.from, existing.to, `#${spelling}${form}`);
-      expected = tags.map((tag, i) => (i === index ? { name: spelling, value: wanted } : tag));
-    } else {
-      edited = append(description, `#${name}${form}`);
-      expected = [...tags, { name, value: wanted }];
-    }
-    if (reads(edited, expected, dueDate)) return updateItem(item, { description: edited });
+  for (const spelling of spellings) {
+    const edited = existing
+      ? splice(description, existing.from, existing.to, `#${existing.tag.name}${spelling}`)
+      : append(description, `#${name}${spelling}`);
+    const expected = existing
+      ? tags.map((tag, i) => (i === index ? { name: existing.tag.name, value: wanted } : tag))
+      : [...tags, { name, value: wanted }];
+    if (check(edited, expected)) return updateItem(item, { description: edited });
   }
   throw new XitEditError(`Couldn't set #${name} without changing the rest of the description.`);
 }
 
 /** Removes every occurrence of a tag (case-insensitive), with the space next to it. */
 export function removeTag(item: Item, name: string): Item {
+  const check = checker(item.description);
   let description = item.description;
   for (;;) {
-    const { tags, dueDate } = parseDescription(description);
-    const index = tags.findIndex((tag) => tagNamesEqual(tag.name, name));
-    if (index === -1) break;
-    const span = spans(description).filter((s) => s.type === 'tag')[index]!;
-    const expected = tags.filter((_, i) => i !== index);
-    const edited = removals(description, span.from, span.to).find((d) => reads(d, expected, dueDate));
+    const tagSpans = spansOf(description).filter((s): s is TagSpan => s.type === 'tag');
+    const index = tagSpans.findIndex((s) => tagNamesEqual(s.tag.name, name));
+    const span = tagSpans[index];
+    if (!span) break;
+    const expected = tagSpans.filter((_, i) => i !== index).map((s) => s.tag);
+    const edited = removalCandidates(description, span.from, span.to).find((d) => check(d, expected));
     if (edited === undefined) {
-      throw new XitEditError(`Couldn't remove #${tags[index]!.name} without changing the rest of the description.`);
+      throw new XitEditError(`Couldn't remove #${span.tag.name} without changing the rest of the description.`);
     }
     description = edited;
   }
@@ -80,17 +82,20 @@ export function removeTag(item: Item, name: string): Item {
  */
 export function setDueDate(item: Item, dueDate: string | DueDate | null): Item {
   const description = item.description;
+  const check = checker(description);
   const { tags } = parseDescription(description);
 
   if (dueDate === null) {
     let current = description;
     for (;;) {
-      const due = spans(current).find((s) => s.type === 'due-date');
+      const due = spansOf(current).find((s) => s.type === 'due-date');
       if (!due) break;
-      const edited = removals(current, due.from, due.to).find((d) => sameTags(parseDescription(d).tags, tags));
-      if (edited === undefined) throw new XitEditError("Couldn't remove the due date without changing the tags.");
+      // Removing it may let a later due date count; the loop removes that one too.
+      const edited = removalCandidates(current, due.from, due.to).find((d) => check(d, tags, 'any'));
+      if (edited === undefined) throw new XitEditError("Couldn't remove the due date without changing the rest of the description.");
       current = edited;
     }
+    if (!check(current, tags, null)) throw new XitEditError("Couldn't remove the due date without changing the rest of the description.");
     return current === description ? item : updateItem(item, { description: current });
   }
 
@@ -101,34 +106,54 @@ export function setDueDate(item: Item, dueDate: string | DueDate | null): Item {
       `Not a valid due date: ${JSON.stringify(text)}. Use yyyy-mm-dd, yyyy-mm, yyyy, yyyy-Www or yyyy-Qq (or / instead of -).`,
     );
   }
-  const existing = spans(description).find((s) => s.type === 'due-date');
+  const existing = spansOf(description).find((s) => s.type === 'due-date');
   const edited = existing
     ? splice(description, existing.from, existing.to, `-> ${text}`)
     : append(description, `-> ${text}`);
-  if (!reads(edited, tags, parsed)) throw new XitEditError("Couldn't set the due date without changing the rest of the description.");
+  if (!check(edited, tags, parsed)) {
+    throw new XitEditError("Couldn't set the due date without changing the rest of the description.");
+  }
   return updateItem(item, { description: edited });
 }
 
-/** The ways to write a tag's value, most natural first: bare, then in either kind of quote. */
-function valueForms(value: string | null): string[] {
-  if (value === null) return [''];
-  if (value.includes('\n')) throw new XitEditError("A tag value can't contain a newline.");
-  const forms: string[] = [];
-  if (NAME.test(value)) forms.push(`=${value}`);
-  if (!value.includes('"')) forms.push(`="${value}"`);
-  if (!value.includes("'")) forms.push(`='${value}'`);
-  if (forms.length === 0) throw new XitEditError(`A tag value can't contain both kinds of quote: ${JSON.stringify(value)}.`);
-  return forms;
+/**
+ * Checks an edited description: it reads back with exactly these tags and
+ * this due date ('any' when only the tags matter), and, if the original could
+ * be written as an item, so can it.
+ */
+function checker(original: string) {
+  const mustBeWritable = descriptionProblem(original) === null;
+  const originalDue = parseDescription(original).dueDate;
+  return (description: string, tags: readonly Tag[], dueDate: DueDate | null | 'any' = originalDue): boolean => {
+    if (mustBeWritable && descriptionProblem(description) !== null) return false;
+    const read = parseDescription(description);
+    if (!sameTags(read.tags, tags)) return false;
+    return dueDate === 'any' || (read.dueDate?.text ?? null) === (dueDate?.text ?? null);
+  };
 }
 
-/** The description's tags and due date, with where each is. */
-function spans(description: string): Array<Segment & { from: number; to: number }> {
+/** The ways to write a tag's value, most natural first: bare, then in either kind of quote. */
+function valueSpellings(value: string | null): string[] {
+  if (value === null) return [''];
+  if (value.includes('\n')) throw new XitEditError("A tag value can't contain a newline.");
+  const spellings: string[] = [];
+  if (isTagName(value)) spellings.push(`=${value}`);
+  if (!value.includes('"')) spellings.push(`="${value}"`);
+  if (!value.includes("'")) spellings.push(`='${value}'`);
+  if (spellings.length === 0) throw new XitEditError(`A tag value can't contain both kinds of quote: ${JSON.stringify(value)}.`);
+  return spellings;
+}
+
+/** The description's tags and due date, with where each is (its plain text is left out). */
+function spansOf(description: string): Span[] {
+  const spans: Span[] = [];
   let offset = 0;
-  return parseDescription(description).segments.map((segment) => {
+  for (const segment of parseDescription(description).segments) {
     const from = offset;
     offset += segment.text.length;
-    return { ...segment, from, to: offset };
-  }).filter((s) => s.type !== 'text');
+    if (segment.type !== 'text') spans.push({ ...segment, from, to: offset });
+  }
+  return spans;
 }
 
 function splice(text: string, from: number, to: number, insert: string): string {
@@ -143,24 +168,29 @@ function append(description: string, piece: string): string {
 }
 
 /** Ways to cut [from, to) out of a description, tidiest first. */
-function removals(text: string, from: number, to: number): string[] {
+function removalCandidates(text: string, from: number, to: number): string[] {
+  const lineStart = text.lastIndexOf('\n', from - 1) + 1;
+  const newlineAfter = text.indexOf('\n', to);
+  const lineEnd = newlineAfter === -1 ? text.length : newlineAfter;
+  const candidates: string[] = [];
+
+  // If nothing but whitespace would be left on the line, drop the whole line
+  // (with one of its line breaks), since a blank line would end the item.
+  const leftOnLine = text.slice(lineStart, from) + text.slice(to, lineEnd);
+  if (isBlankLine(leftOnLine) && text.includes('\n')) {
+    candidates.push(newlineAfter === -1 ? text.slice(0, lineStart - 1) : splice(text, lineStart, lineEnd + 1, ''));
+  }
+
   const before = text[from - 1];
   const after = text[to];
-  const atLineStart = before === undefined || before === '\n';
-  const atLineEnd = after === undefined || after === '\n';
-  const options: string[] = [];
-  if (before === ' ' && (atLineEnd || after === ' ')) options.push(splice(text, from - 1, to, ''));
-  if (atLineStart && after === ' ') options.push(splice(text, from, to + 1, ''));
-  if (before === ' ') options.push(splice(text, from - 1, to, ''));
-  if (after === ' ') options.push(splice(text, from, to + 1, ''));
-  options.push(splice(text, from, to, ''));
-  return options;
-}
-
-/** Whether a description reads back with exactly these tags and this due date. */
-function reads(description: string, tags: readonly Tag[], dueDate: DueDate | null): boolean {
-  const read = parseDescription(description);
-  return sameTags(read.tags, tags) && (read.dueDate?.text ?? null) === (dueDate?.text ?? null);
+  const atLineStart = from === lineStart;
+  const atLineEnd = to === lineEnd;
+  if (before === ' ' && (atLineEnd || after === ' ')) candidates.push(splice(text, from - 1, to, ''));
+  if (atLineStart && after === ' ') candidates.push(splice(text, from, to + 1, ''));
+  if (before === ' ') candidates.push(splice(text, from - 1, to, ''));
+  if (after === ' ') candidates.push(splice(text, from, to + 1, ''));
+  candidates.push(splice(text, from, to, ''));
+  return candidates;
 }
 
 function sameTags(a: readonly Tag[], b: readonly Tag[]): boolean {
