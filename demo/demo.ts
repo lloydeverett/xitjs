@@ -6,8 +6,9 @@ import { EditorView, drawSelection, highlightActiveLine, lineNumbers } from '@co
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { linter, lintGutter } from '@codemirror/lint';
 import {
-  XitEditError, XitParseError, XitStringifyError, createItem, getGroups, parse, parseDescription, parseDueDate,
-  removeTag, setDueDate, setTag, stringify, tokenize, updateItem, validate,
+  XitEditError, XitParseError, XitStringifyError, addGroup, addItem, getGroups, moveGroup, moveItem, parse,
+  parseDescription, parseDueDate, removeGroup, removeItem, removeTag, setDueDate, setGroupTitle, setTag, stringify,
+  tokenize, updateItem, validate,
   type Item, type Newline, type Status, type Tag, type XitDocument,
 } from '../src/index.ts';
 import { xit, xitHighlightStyle, xitTags } from '../src/codemirror.ts';
@@ -142,6 +143,7 @@ function render() {
   const parsed = { source, doc: parse(source) };
   renderBadge(parsed);
   renderItemPicker(parsed.doc);
+  renderGroupPickers(parsed.doc);
   output.innerHTML = TABS[tab].render(parsed);
 }
 
@@ -280,7 +282,7 @@ output.addEventListener('click', (event) => {
 // Editing items -----------------------------------------------------------------
 
 const itemSelect = element<HTMLSelectElement>('item');
-const message = element('edit-message');
+const itemMessage = element('edit-message');
 
 /** Lists the document's items by block index, keeping the selection where it can. */
 function renderItemPicker(doc: XitDocument) {
@@ -309,14 +311,20 @@ function syncItemControls(doc: XitDocument) {
 }
 itemSelect.addEventListener('change', () => syncItemControls(parse(editorText())));
 
-/** Applies a change to the document and writes it back into the editor, or shows why it can't. */
-function edit(action: string, change: (doc: XitDocument) => XitDocument) {
+/**
+ * Applies a change to the document and writes it back into the editor, or
+ * shows why it can't (in the card's message line).
+ */
+function edit(action: string, change: (doc: XitDocument) => XitDocument, message = itemMessage) {
   try {
     setEditorText(stringify(change(parse(editorText()))));
-    show(`${action}: done.`, 'ok');
+    show(message, `${action}: done.`, 'ok');
   } catch (error) {
-    if (error instanceof XitEditError || error instanceof XitStringifyError) show(`${error.name}: ${error.message}`, 'error');
-    else throw error;
+    if (error instanceof XitEditError || error instanceof XitStringifyError) {
+      show(message, `${error.name}: ${error.message}`, 'error');
+    } else {
+      throw error;
+    }
   }
 }
 
@@ -328,7 +336,7 @@ function editItem(action: string, change: (item: Item) => Item) {
   });
 }
 
-function show(text: string, kind: 'ok' | 'error') {
+function show(message: HTMLElement, text: string, kind: 'ok' | 'error') {
   message.textContent = text;
   message.className = `message ${kind}`;
 }
@@ -353,13 +361,58 @@ element('set-due').addEventListener('click', () => {
 element('clear-due').addEventListener('click', () => {
   editItem('setDueDate(null)', (item) => setDueDate(item, null));
 });
+element('move-item').addEventListener('click', () => {
+  const group = Number(element<HTMLSelectElement>('move-to-group').value);
+  const position = inputText('move-position') === '' ? undefined : Number(inputText('move-position'));
+  edit('moveItem', (doc) => moveItem(doc, requireItem(doc), group, position));
+});
+element('remove-item').addEventListener('click', () => {
+  edit('removeItem', (doc) => removeItem(doc, requireItem(doc)));
+});
+
+function requireItem(doc: XitDocument): Item {
+  const selected = selectedItem(doc);
+  if (!selected) throw new XitEditError('Pick an item first.');
+  return selected.item;
+}
+
+// Editing groups ----------------------------------------------------------------
+
+const groupSelect = element<HTMLSelectElement>('group');
+const moveToGroupSelect = element<HTMLSelectElement>('move-to-group');
+const groupMessage = element('group-message');
+
+/** Lists the document's groups (by index into getGroups) in both group pickers. */
+function renderGroupPickers(doc: XitDocument) {
+  const labels = getGroups(doc).map((g, i) =>
+    `${i}: ${g.title ?? '(no title)'} · ${g.items.length} item${g.items.length === 1 ? '' : 's'}`);
+  for (const select of [groupSelect, moveToGroupSelect]) {
+    const selected = select.value;
+    select.replaceChildren(...labels.map((label, i) => new Option(label, String(i))));
+    if (Number(selected) < labels.length) select.value = selected;
+  }
+}
+
+const selectedGroup = () => Number(groupSelect.value);
+const editGroup = (action: string, change: (doc: XitDocument) => XitDocument) => edit(action, change, groupMessage);
+
 element('add-item').addEventListener('click', () => {
-  const text = inputText('new-item');
-  edit('createItem', (doc) => {
-    // After the last item, or at the end.
-    const last = doc.blocks.findLastIndex((b) => b.type === 'item');
-    return { ...doc, blocks: doc.blocks.toSpliced(last + 1, 0, createItem(text)) };
-  });
+  editGroup('addItem', (doc) => addItem(doc, selectedGroup(), inputText('new-item')));
+});
+element('set-title').addEventListener('click', () => {
+  editGroup('setGroupTitle', (doc) => setGroupTitle(doc, selectedGroup(), inputText('group-title')));
+});
+element('clear-title').addEventListener('click', () => {
+  editGroup('setGroupTitle(null)', (doc) => setGroupTitle(doc, selectedGroup(), null));
+});
+element('move-group').addEventListener('click', () => {
+  editGroup('moveGroup', (doc) => moveGroup(doc, selectedGroup(), Number(inputText('group-position'))));
+});
+element('remove-group').addEventListener('click', () => {
+  editGroup('removeGroup', (doc) => removeGroup(doc, selectedGroup()));
+});
+element('add-group').addEventListener('click', () => {
+  editGroup('addGroup', (doc) => addGroup(doc, { title: inputText('new-group') || null }));
 });
 
 // Trying a description or a due date ------------------------------------------

@@ -22,7 +22,7 @@
   "sideEffects": false,
   "scripts": {
     "test": "node --test 'test/**/*.test.ts'",
-    "test:fuzz": "XIT_FUZZ=50 node --test test/round-trip.test.ts test/tokenize.test.ts test/codemirror.test.ts",
+    "test:fuzz": "XIT_FUZZ=50 node --test test/round-trip.test.ts test/tokenize.test.ts test/codemirror.test.ts test/groups.test.ts",
     "test:watch": "node --test --watch 'test/**/*.test.ts'",
     "test:dist": "tsc -p tsconfig.build.json && node test/dist-smoke.js",
     "demo": "vite",

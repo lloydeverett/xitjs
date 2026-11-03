@@ -93,7 +93,8 @@ export function splitLines(source: string, offset: number) {
     else if (found !== newline && mixedAt === null) mixedAt = match.index + found.length - 1;
     start = match.index + found.length;
   }
-  const finalNewline = start === source.length && lines.length > 0;
+  // With no lines there's no final newline to be missing (so content added later gets one).
+  const finalNewline = start === source.length;
   if (start < source.length) lines.push({ text: source.slice(start), start });
   return { lines, newline: newline ?? '\n', finalNewline, mixedAt };
 }

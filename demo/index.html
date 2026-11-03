@@ -24,7 +24,7 @@
         </div>
 
         <div class="card">
-          <h2>Edit an item <small>updateItem, setTag, removeTag, setDueDate, then stringify</small></h2>
+          <h2>Edit an item <small>updateItem, setTag, removeTag, setDueDate, moveItem, removeItem</small></h2>
           <label class="row">
             Item
             <select id="item"></select>
@@ -52,10 +52,39 @@
             <button id="clear-due">Clear</button>
           </div>
           <div class="row">
-            <input id="new-item" placeholder="A new item's text" />
-            <button id="add-item">Add item (createItem)</button>
+            <label>Move to <select id="move-to-group"></select></label>
+            <label>at <input id="move-position" type="number" min="0" placeholder="end" /></label>
+            <button id="move-item">Move item</button>
+            <button id="remove-item">Remove item</button>
           </div>
           <p id="edit-message" class="message"></p>
+        </div>
+
+        <div class="card">
+          <h2>Edit a group <small>addItem, setGroupTitle, moveGroup, removeGroup, addGroup</small></h2>
+          <label class="row">
+            Group
+            <select id="group" class="wide"></select>
+          </label>
+          <div class="row">
+            <input id="new-item" placeholder="A new item's text" />
+            <button id="add-item">Add item</button>
+          </div>
+          <div class="row">
+            <input id="group-title" placeholder="title" />
+            <button id="set-title">Set title</button>
+            <button id="clear-title">Remove title</button>
+          </div>
+          <div class="row">
+            <label>Move to <input id="group-position" type="number" min="0" value="0" /></label>
+            <button id="move-group">Move group</button>
+            <button id="remove-group">Remove group</button>
+          </div>
+          <div class="row">
+            <input id="new-group" placeholder="A new group's title" />
+            <button id="add-group">Add group at the end</button>
+          </div>
+          <p id="group-message" class="message"></p>
         </div>
 
         <div class="card">

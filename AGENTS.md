@@ -67,6 +67,11 @@ Work test-first: write the test, see it fail, then make it pass. Run
   if re-reading gives exactly the intended tags and due date; otherwise it
   throws `XitEditError`. Keep that check: it's what stops an edit from
   quietly changing text next to it.
+- The group helpers (`src/groups.ts`: `addItem`, `moveGroup` and so on)
+  work the same way on the list of blocks: candidate block lists, tidiest
+  first, each kept only if it can be written and reads back with exactly
+  the intended groups. The check is what stops an edit from merging two
+  groups or turning an invalid line into a title.
 - `test/fixtures/syntax-guide.json` is generated (`scripts/guide_fixture.py`);
   don't edit it by hand. Where we read a guide example differently, it's
   listed in `DEVIATIONS` in `test/syntax-guide.test.ts`.

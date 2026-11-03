@@ -114,6 +114,10 @@ export interface ParsedDescription {
 export interface Group {
   title: string | null;
   items: Item[];
+  /** The index in `blocks` of the group's first block (its title, or its first item). */
+  start: number;
+  /** The index in `blocks` just past its last block. */
+  end: number;
 }
 
 export type DiagnosticCode =

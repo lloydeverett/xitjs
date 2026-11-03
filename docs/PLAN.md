@@ -21,6 +21,10 @@
 > - **`xitjs/codemirror` added since:** the tokenizer as a CodeMirror
 >   `StreamLanguage`, with highlighting tags and a default style. Its
 >   CodeMirror packages are optional peer dependencies.
+> - **Group editing added since:** `addItem`, `removeItem`, `moveItem`,
+>   `addGroup`, `removeGroup`, `moveGroup` and `setGroupTitle`
+>   (`src/groups.ts`), and `getGroups` gives each group's range in
+>   `blocks`. The document stays a flat list of blocks.
 
 A dependency-free TypeScript library that parses [x]it! documents
 (spec v1.1, `docs/xit-specification-1.1.md`) into plain data, and writes

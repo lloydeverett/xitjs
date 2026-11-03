@@ -20,14 +20,20 @@ export class XitStringifyError extends Error {
   override name = 'XitStringifyError';
   /** The index in `blocks` of the block that couldn't be written. */
   readonly blockIndex: number;
+  /** Why it couldn't be written (the message, without the block index). */
+  readonly reason: string;
 
-  constructor(message: string, blockIndex: number) {
-    super(`blocks[${blockIndex}]: ${message}`);
+  constructor(reason: string, blockIndex: number) {
+    super(`blocks[${blockIndex}]: ${reason}`);
     this.blockIndex = blockIndex;
+    this.reason = reason;
   }
 }
 
-/** Thrown by `setTag`, `removeTag` and `setDueDate` when an edit can't be made as asked. */
+/**
+ * Thrown by the editing helpers (`setTag`, `addItem`, `moveGroup` and so on)
+ * when an edit can't be made as asked.
+ */
 export class XitEditError extends Error {
   override name = 'XitEditError';
 }

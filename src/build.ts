@@ -9,13 +9,19 @@ export interface ItemInit {
 
 export interface GroupInit {
   title?: string | null;
-  items?: ReadonlyArray<string | ItemInit>;
+  /** Each item's text, an `ItemInit`, or an item (which keeps its formatting). */
+  items?: ReadonlyArray<string | ItemInit | Item>;
 }
 
 /** Makes an item, open with no priority by default. A string is its description. */
 export function createItem(init: string | ItemInit = {}): Item {
   const { status = 'open', priority = 0, description = '' } = typeof init === 'string' ? { description: init } : init;
   return makeItem(status, priority, description);
+}
+
+/** An item as given (keeping its formatting), or a new one from its text or `ItemInit`. */
+export function itemFrom(input: string | ItemInit | Item): Item {
+  return typeof input === 'object' && 'type' in input && input.type === 'item' ? input : createItem(input);
 }
 
 /**
@@ -38,7 +44,7 @@ export function createDocument(groups: readonly GroupInit[] = []): XitDocument {
   groups.forEach((group, index) => {
     if (index > 0) blocks.push({ type: 'blank' });
     if (group.title != null) blocks.push({ type: 'title', text: group.title });
-    for (const item of group.items ?? []) blocks.push(createItem(item));
+    for (const item of group.items ?? []) blocks.push(itemFrom(item));
   });
   return { blocks, newline: '\n', finalNewline: true, bom: false };
 }

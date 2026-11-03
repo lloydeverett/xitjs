@@ -9,7 +9,8 @@ const errorCodes = (source: string) =>
 
 describe('parse: blocks', () => {
   test('an empty source is an empty document', () => {
-    assert.deepEqual(parse(''), { blocks: [], newline: '\n', finalNewline: false, bom: false });
+    // With no lines, there's no final newline to be missing, so content added later gets one.
+    assert.deepEqual(parse(''), { blocks: [], newline: '\n', finalNewline: true, bom: false });
   });
 
   test('titles, items and blank lines', () => {

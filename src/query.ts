@@ -1,29 +1,4 @@
-import type { Group, Item, Tag, XitDocument } from './types.ts';
-
-/**
- * Splits a document into groups: runs of items, each with an optional title
- * before it. Blank and invalid lines end a group. The items are the
- * document's own blocks, so they can be found again in `document.blocks`.
- */
-export function getGroups(document: XitDocument): Group[] {
-  const groups: Group[] = [];
-  let current: Group | null = null;
-  for (const block of document.blocks) {
-    if (block.type === 'title') {
-      current = { title: block.text, items: [] };
-      groups.push(current);
-    } else if (block.type === 'item') {
-      if (!current) {
-        current = { title: null, items: [] };
-        groups.push(current);
-      }
-      current.items.push(block);
-    } else {
-      current = null;
-    }
-  }
-  return groups;
-}
+import type { Item, Tag, XitDocument } from './types.ts';
 
 /** All the document's items, in order. */
 export function getItems(document: XitDocument): Item[] {

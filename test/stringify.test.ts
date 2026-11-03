@@ -12,6 +12,9 @@ function throwsAt(document: XitDocument, blockIndex: number, message: RegExp) {
     assert.ok(error instanceof XitStringifyError, String(error));
     assert.equal(error.blockIndex, blockIndex);
     assert.match(error.message, message);
+    // The message is the reason, prefixed with where.
+    assert.match(error.reason, message);
+    assert.equal(error.message, `blocks[${blockIndex}]: ${error.reason}`);
     return true;
   });
 }

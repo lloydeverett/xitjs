@@ -101,7 +101,7 @@ and a changed one is written in the standard form.
 |---|---|
 | `parse(source, { strict? })` | Parse a document. Never throws: invalid lines become `InvalidLine` blocks. With `strict: true` it throws a `XitParseError` (with `.diagnostics`) if there are any errors. |
 | `validate(source)` | `Diagnostic[]`: errors (invalid lines) and warnings (valid, but probably not meant). |
-| `getGroups(doc)` | `{ title: string \| null, items: Item[] }[]`. Blank and invalid lines end a group. The items are the document's own block objects. |
+| `getGroups(doc)` | `{ title: string \| null, items: Item[], start, end }[]`. Blank and invalid lines end a group. The items are the document's own block objects, and `start`/`end` are the group's range in `doc.blocks`. |
 | `getItems(doc)` | All items, in order. |
 | `getTag(item, name)`, `hasTag(item, name)`, `tagNamesEqual(a, b)` | Tag lookups. Names are case-insensitive. |
 | `parseDescription(text)` | `{ tags, dueDate, segments }`. `segments` splits the text into text, tag and due-date pieces, e.g. to render tags as chips. |
@@ -111,10 +111,10 @@ and a changed one is written in the standard form.
 
 | | |
 |---|---|
-| `stringify(doc, { newline?, finalNewline? })` | Write a document. Throws a `XitStringifyError` (with `.blockIndex`) if it can't be written so it reads back the same. Examples: a title after a non-blank line, a blank continuation line, a title starting with `[`. |
+| `stringify(doc, { newline?, finalNewline? })` | Write a document. Throws a `XitStringifyError` (with `.blockIndex` and `.reason`) if it can't be written so it reads back the same. Examples: a title after a non-blank line, a blank continuation line, a title starting with `[`. |
 | `createItem('text' \| { status?, priority?, description? })` | A new item. |
 | `updateItem(item, changes)` | A copy with changes applied and derived fields worked out again. |
-| `createDocument([{ title?, items? }, ...])` | A document of groups, with blank lines between them. |
+| `createDocument([{ title?, items? }, ...])` | A document of groups, with blank lines between them. Items can be text, `ItemInit`s or items. |
 
 ### Editing tags and due dates
 
@@ -139,6 +139,38 @@ let item = createItem('Call mum');
 item = setTag(item, 'who', 'Mum & Dad'); // 'Call mum #who="Mum & Dad"'
 item = setDueDate(item, '2026-W45');     // 'Call mum #who="Mum & Dad" -> 2026-W45'
 item = removeTag(item, 'who');           // 'Call mum -> 2026-W45'
+```
+
+### Editing groups
+
+The document stays a flat list of blocks; these find the blocks a change
+touches, for a UI organised by group (like a kanban board, one column per
+group). Each returns a new document. A group is its index in
+`getGroups(doc)`; an item is the document's own block object.
+
+| | |
+|---|---|
+| `addItem(doc, group, item, position?)` | Adds an item (text, an `ItemInit`, or an item) at the end of a group, or at `position` among its items. |
+| `removeItem(doc, item)` | Removes an item. A group without a title goes with its last item. |
+| `moveItem(doc, item, group, position?)` | Moves an item to a group, at the end or so it ends up at `position`, keeping its formatting. |
+| `addGroup(doc, { title?, items? }, index?)` | Adds a group at the end, or before the group at `index`. |
+| `removeGroup(doc, group)` | Removes a group, with any invalid lines straight after its items. |
+| `moveGroup(doc, from, to)` | Moves a group so it ends up at `to`, with any invalid lines straight after its items. |
+| `setGroupTitle(doc, group, title \| null)` | Renames a group, gives it a title, or (with `null`) removes its title. |
+
+Blank lines are added or removed as needed: one separates groups, and a
+title must come first or after one. Like the item edits, each tries the
+tidiest change, and keeps it only if the document can still be written and
+reads back with exactly the intended groups. Every other line is written
+back as it was. If an edit can't be made that way, it throws a
+`XitEditError`: for example, removing the group above a line that isn't
+valid would make that line the first, and so a title.
+
+```ts
+// Drag "Milk" to the top of the "Work" column.
+const [groceries] = getGroups(doc);
+const milk = groceries!.items.find((i) => i.description.startsWith('Milk'))!;
+doc = moveItem(doc, milk, 1, 0);
 ```
 
 ### Highlighting
@@ -266,13 +298,18 @@ mise exec -- pnpm demo        # a demo page: http://localhost:5173
 ```
 
 `pnpm demo` serves `demo/` with Vite, using the library straight from
-`src/`. It has a CodeMirror editor using `xitjs/codemirror` (with lint
-from `validate`), samples including every syntax-guide example, controls
-that edit the selected item with `updateItem`, `setTag`, `removeTag`,
-`setDueDate` and `createItem`, and what `parse` (optionally strict),
-`getGroups`, `validate`, `tokenize` and `stringify` (with its options) make
-of the text. A last panel tries `parseDescription` and `parseDueDate` on
-whatever you type.
+`src/`. It has:
+
+- a CodeMirror editor using `xitjs/codemirror`, with lint from `validate`;
+- samples, including every syntax-guide example;
+- controls that edit the selected item (`updateItem`, `setTag`,
+  `removeTag`, `setDueDate`, `moveItem`, `removeItem`) and the selected
+  group (`addItem`, `setGroupTitle`, `moveGroup`, `removeGroup`,
+  `addGroup`);
+- what `parse` (optionally strict), `getGroups`, `validate`, `tokenize` and
+  `stringify` (with its options) make of the text;
+- a panel that tries `parseDescription` and `parseDueDate` on whatever you
+  type.
 
 `test/fixtures/syntax-guide.json` is generated from the syntax guide's HTML
 by `scripts/guide_fixture.py`. It records how the guide's own highlighting
